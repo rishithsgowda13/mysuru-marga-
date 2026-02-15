@@ -1,28 +1,58 @@
-
+﻿
 
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Categories from './components/Categories';
-import FeaturedSection from './components/FeaturedSection';
-import BottomNav from './components/BottomNav';
-import Explore from './components/Explore';
-import Map from './components/Map';
-import Saved from './components/Saved';
-import ProfilePage from './pages/ProfilePage';
-import AuthPage from './pages/AuthPage';
-import AdminDashboard from './pages/AdminDashboard';
-import PartnerDashboard from './pages/PartnerDashboard';
-import './App.css';
-import { supabase } from './lib/supabaseClient';
+import { Navbar, Hero, Categories, FeaturedSection, BottomNav, Explore, Map, Saved, PlaceCard, Loader, PlaceDetails, EventsSection, ChatBot } from './AllComponents';
+import { ProfilePage, AuthPage, AdminDashboard, PartnerDashboard } from './AllPages';
 
-import PlaceCard from './components/PlaceCard';
-import Loader from './components/Loader';
-import PlaceDetails from './components/PlaceDetails';
-import EventsSection from './components/EventsSection';
-import ChatBot from './components/ChatBot';
+import { createClient } from '@supabase/supabase-js';
 
-import { popularPlaces, allPlaces } from './data';
+// --- SUPABASE CLIENT ---
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('âš ï¸ Supabase credentials not configured. Check your .env file.');
+}
+
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
+
+// --- STATIC DATA ---
+export const featuredPlaces = [
+  {
+    id: 'karanji-lake',
+    title: "Karanji Lake",
+    category: "Nature",
+    categoryColor: "bg-green-500",
+    description: "Serene nature trail with butterfly park and panoramic palace views",
+    location: "Siddhartha Layout",
+    rating: 4.3,
+    coords: [12.3021, 76.6715],
+    image: "/karanji.jpg"
+  }
+];
+
+export const popularPlaces = [
+  {
+    id: 'karanji-lake',
+    title: "Karanji Lake",
+    category: "Nature",
+    categoryColor: "bg-green-500",
+    description: "Serene nature trail with butterfly park and panoramic palace views",
+    location: "Siddhartha Layout",
+    rating: 4.3,
+    coords: [12.3021, 76.6715],
+    image: "/karanji.jpg"
+  }
+];
+
+const allPlacesMap = new Map();
+[...featuredPlaces, ...popularPlaces].forEach(place => {
+  allPlacesMap.set(place.id, place);
+});
+export const allPlaces = Array.from(allPlacesMap.values());
+
 
 
 function App() {
@@ -139,17 +169,6 @@ function App() {
 
   // Initial Auth Check
   React.useEffect(() => {
-    // const savedUser = localStorage.getItem('userData');
-    // if (savedUser) {
-    //   try {
-    //     const parsedUser = JSON.parse(savedUser);
-    //     setUserData(parsedUser);
-    //     setUserRole(parsedUser.role || 'user');
-    //     setIsAuthenticated(true);
-    //   } catch (err) {
-    //     console.error('Failed to restore session', err);
-    //   }
-    // }
     setIsAuthRestoring(false); // Auth restoration attempt complete
   }, []);
 
@@ -452,7 +471,7 @@ function App() {
     <div className="min-h-screen bg-mysore-light dark:bg-mysore-dark transition-colors duration-200 selection:bg-[#D4AF37]/30 flex flex-col">
       {!supabase && (
         <div className="bg-red-500 text-white text-[10px] py-1 px-4 text-center font-bold animate-pulse z-50">
-          ⚠️ DEMO MODE: Supabase not connected. Check your .env file!
+          âš ï¸ DEMO MODE: Supabase not connected. Check your .env file!
         </div>
       )}
 
