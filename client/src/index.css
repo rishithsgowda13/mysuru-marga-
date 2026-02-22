@@ -96,42 +96,97 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}/* Leaflet Map Global Fixes */
+}
+
+/* Leaflet Map Global Fixes */
 .leaflet-container {
-    height: 100% !important;
-    width: 100% !important;
-    outline: none;
-    z-index: 10;
+  height: 100% !important;
+  width: 100% !important;
+  outline: none;
+  z-index: 10;
 }
 
 /* Ensure tiles look good in both modes */
 .leaflet-tile-pane {
-    filter: brightness(1.05) contrast(0.95);
+  filter: brightness(1.05) contrast(0.95);
 }
 
 .dark .leaflet-tile-pane {
-    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
 
 /* Clean up Leaflet controls */
 .leaflet-control-zoom {
-    border: none !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  border: none !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
 .leaflet-bar a {
-    background-color: white !important;
-    color: #4B5563 !important;
-    border: none !important;
-    border-bottom: 1px solid #E5E7EB !important;
+  background-color: white !important;
+  color: #4B5563 !important;
+  border: none !important;
+  border-bottom: 1px solid #E5E7EB !important;
 }
 
 .leaflet-bar a:last-child {
-    border-bottom: none !important;
+  border-bottom: none !important;
 }
 
 .dark .leaflet-bar a {
-    background-color: #1F2937 !important;
-    color: #D1D5DB !important;
-    border-color: #374151 !important;
+  background-color: #1F2937 !important;
+  color: #D1D5DB !important;
+  border-color: #374151 !important;
+}
+
+/* Loader Animations */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.6;
+  }
+}
+
+@keyframes loading-progress {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
+}
+
+.animate-fade-in-up-delay {
+  animation: fade-in-up 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.8s forwards;
+}
+
+.animate-fade-in-slow {
+  animation: fade-in 2s ease-out 1.5s forwards;
+}
+
+.animate-loading-progress {
+  animation: loading-progress 4.5s cubic-bezier(0.1, 0, 0.3, 1) forwards;
 }

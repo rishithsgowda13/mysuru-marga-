@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import {
     Home, Compass, Map as MapIcon, Heart, Sparkles, Palette, Utensils, MapPin, Landmark, TreePine,
-    MessageCircle, X, Send, Loader2, Calendar, Tag, ArrowRight, Search, Star,
+    MessageCircle, X, Send, Loader2, Calendar, Tag, ArrowRight, ArrowLeft, Search, Star,
     Navigation, Car, Clock, ChevronRight, User, ChevronLeft, Share2, IndianRupee,
     Check, MessageSquare, Users, BarChart3, LogOut, Shield, Inbox, Handshake,
     TrendingUp, Settings, Bell, Lock, Globe, Database, ExternalLink, Download,
@@ -796,42 +796,6 @@ export const Loader = ({ onFinish }) => {
                 </p>
             </div>
 
-            <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-
-        @keyframes fade-in-up {
-          0% {
-            opacity: 0;
-            transform: translateY(15px);
-            filter: blur(10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0);
-          }
-        }
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 0.6; }
-        }
-        @keyframes loading-progress {
-          0% { width: 0%; }
-          100% { width: 100%; }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards;
-        }
-        .animate-fade-in-up-delay {
-          animation: fade-in-up 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.8s forwards;
-        }
-        .animate-fade-in-slow {
-          animation: fade-in 2s ease-out 1.5s forwards;
-        }
-        .animate-loading-progress {
-          animation: loading-progress 4.5s cubic-bezier(0.1, 0, 0.3, 1) forwards;
-        }
-      `}</style>
         </div>
     );
 };
