@@ -652,6 +652,8 @@ export const FeedbackSection = ({ userEmail, onSuccess }) => {
                     </div>
 
                     <textarea
+                        id="feedback-comment"
+                        name="comment"
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder="Tell us about your experience..."
@@ -683,8 +685,11 @@ export const Hero = ({ onExploreClick }) => {
                 </div>
                 <input
                     type="text"
+                    id="search-input"
+                    name="search"
                     className="block w-full pl-14 pr-32 py-5 border-none rounded-[2rem] leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] transition-all font-medium text-sm md:text-base"
                     placeholder="Search for hidden gems, culture, food..."
+                    autocomplete="off"
                 />
                 <div className="absolute inset-y-2 right-2 flex items-center">
                     <button className="px-5 py-2.5 bg-black dark:bg-[#D4AF37] rounded-[1.5rem] text-white dark:text-black font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/20 dark:shadow-[#D4AF37]/20">
@@ -2642,26 +2647,28 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                         <div className="space-y-4">
                                             <div className="relative group">
                                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
-                                                <input type="text" name="fullName" value={signUpData.fullName} onChange={handleSignUpChange} placeholder="Full Name" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.fullName ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
+                                                <input type="text" id="signup-fullname" name="fullName" value={signUpData.fullName} onChange={handleSignUpChange} placeholder="Full Name" autocomplete="name" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.fullName ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
                                                 {signUpErrors.fullName && <p className="text-[10px] text-red-500 font-bold mt-1 px-4">{signUpErrors.fullName}</p>}
                                             </div>
                                             <div className="relative group">
                                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
-                                                <input type="email" name="email" value={signUpData.email} onChange={handleSignUpChange} placeholder="Email" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.email ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
+                                                <input type="email" id="signup-email" name="email" value={signUpData.email} onChange={handleSignUpChange} placeholder="Email" autocomplete="email" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.email ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
                                                 {signUpErrors.email && <p className="text-[10px] text-red-500 font-bold mt-1 px-4">{signUpErrors.email}</p>}
                                             </div>
                                             <div className="relative group">
                                                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
-                                                <input type="tel" name="phone" value={signUpData.phone} onChange={handleSignUpChange} placeholder="Phone Number" className="w-full pl-12 pr-4 py-4 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all" />
+                                                <input type="tel" id="signup-phone" name="phone" value={signUpData.phone} onChange={handleSignUpChange} placeholder="Phone Number" autocomplete="tel" className="w-full pl-12 pr-4 py-4 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all" />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="relative">
                                                     <input
                                                         type={showSignUpPassword ? "text" : "password"}
+                                                        id="signup-password"
                                                         name="password"
                                                         value={signUpData.password}
                                                         onChange={handleSignUpChange}
                                                         placeholder="Password"
+                                                        autocomplete="new-password"
                                                         className={`w-full pl-5 pr-10 py-4 border ${signUpErrors.password ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`}
                                                     />
                                                     <button
@@ -2676,10 +2683,12 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                                 <div className="relative">
                                                     <input
                                                         type={showConfirmPassword ? "text" : "password"}
+                                                        id="signup-confirm-password"
                                                         name="confirmPassword"
                                                         value={signUpData.confirmPassword}
                                                         onChange={handleSignUpChange}
                                                         placeholder="Confirm"
+                                                        autocomplete="new-password"
                                                         className={`w-full pl-5 pr-10 py-4 border ${signUpErrors.confirmPassword ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`}
                                                     />
                                                     <button
@@ -2747,9 +2756,12 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                         <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-[#D4AF37] transition-colors" />
                                         <input
                                             type="text"
+                                            id="login-email"
+                                            name="email"
                                             value={loginIdentifier}
                                             onChange={(e) => setLoginIdentifier(e.target.value)}
                                             placeholder="Email Address"
+                                            autocomplete="email"
                                             className="w-full pl-16 pr-6 py-6 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all shadow-inner"
                                             required
                                         />
@@ -2758,9 +2770,12 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                         <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-[#D4AF37] transition-colors" />
                                         <input
                                             type={showLoginPassword ? 'text' : 'password'}
+                                            id="login-password"
+                                            name="password"
                                             value={loginPassword}
                                             onChange={(e) => setLoginPassword(e.target.value)}
                                             placeholder="Password"
+                                            autocomplete="current-password"
                                             className="w-full pl-16 pr-16 py-6 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all shadow-inner"
                                             required
                                         />
@@ -3493,19 +3508,17 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
     const loadEvents = async () => {
         setIsLoading(true);
         try {
-            // Use local supabase instance
-            if (supabase && partner?.email) {
-                const { data, error } = await supabase
-                    .from('heritage_events')
-                    .select('*')
-                    .eq('partner_email', partner.email)
-                    .order('event_date', { ascending: true });
-
-                if (error) throw error;
-                setEvents(data || []);
-            }
+            // Disabled until heritage_events table schema is configured in Supabase
+            // if (supabase && partner?.email) {
+            //     const { data, error } = await supabase
+            //         .from('heritage_events')
+            //         .select('*')
+            //         .eq('partner_email', partner.email);
+            //     if (error) throw error;
+            //     setEvents(data || []);
+            // }
         } catch (err) {
-            console.error("Error loading events:", err);
+            console.warn("Partner events not available");
         } finally {
             setIsLoading(false);
         }
@@ -3522,10 +3535,8 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                     spot_name: spot.name,
                     title: newEvent.title,
                     description: newEvent.description,
-                    event_date: newEvent.date,
                     event_type: newEvent.type,
-                    price: newEvent.price,
-                    status: 'active'
+                    price: newEvent.price
                 };
 
                 const { data, error } = await supabase
@@ -3601,6 +3612,8 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                                 <input
                                     required
                                     type="text"
+                                    id="event-title"
+                                    name="title"
                                     value={newEvent.title}
                                     onChange={e => setNewEvent({ ...newEvent, title: e.target.value })}
                                     placeholder="e.g. Dasara Workshop Special"
@@ -3610,6 +3623,8 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Event Type</label>
                                 <select
+                                    id="event-type"
+                                    name="type"
                                     value={newEvent.type}
                                     onChange={e => setNewEvent({ ...newEvent, type: e.target.value })}
                                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 text-black dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all font-bold cursor-pointer"
@@ -3626,6 +3641,8 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                         <div>
                             <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Soulful Description</label>
                             <textarea
+                                id="event-description"
+                                name="description"
                                 required
                                 rows="3"
                                 value={newEvent.description}
@@ -3641,6 +3658,8 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                                 <input
                                     required
                                     type="date"
+                                    id="event-date"
+                                    name="date"
                                     value={newEvent.date}
                                     onChange={e => setNewEvent({ ...newEvent, date: e.target.value })}
                                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 text-black dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all font-bold"
@@ -3650,9 +3669,11 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Energy Exchange (Price)</label>
                                 <input
                                     type="text"
+                                    id="event-price"
+                                    name="price"
                                     value={newEvent.price}
                                     onChange={e => setNewEvent({ ...newEvent, price: e.target.value })}
-                                    placeholder="Free or ₹‚¹ Amount"
+                                    placeholder="Free or ₹ Amount"
                                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 text-black dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all font-medium"
                                 />
                             </div>
@@ -4076,52 +4097,46 @@ function App() {
 
     // Fetch spots from Supabase
     const fetchSpots = async () => {
-        try {
-            if (!supabase) return;
-
-            const { data, error } = await supabase
-                .from('heritage_spots')
-                .select('*');
-
-            if (error) throw error;
-
-            if (data && data.length > 0) {
-                // Map Supabase data to the application format
-                const supabaseSpots = data.map(s => ({
-                    id: s.id,
-                    title: s.title,
-                    category: s.category || 'Hidden Gem',
-                    description: s.description,
-                    location: s.address || 'Mysuru',
-                    rating: 4.5, // Default for new spots
-                    coords: [s.location_lat || 12.3021, s.location_long || 76.6715],
-                    image: s.image_url || '/src/assets/mysore-palace-daytime.jpg',
-                    isVerified: s.is_verified
-                }));
-
-                // Merge Supabase spots with hardcoded spots
-                setSpots([...supabaseSpots, ...allPlaces.filter(p => !supabaseSpots.some(s => s.title === p.title))]);
-            }
-        } catch (err) {
-            console.error("Error fetching heritage spots:", err);
-        }
+        // NOTE: Disabled until heritage_spots table is ready
+        // try {
+        //     if (!supabase) return;
+        //     const { data, error } = await supabase
+        //         .from('heritage_spots')
+        //         .select('*');
+        //     if (error) throw error;
+        //     if (data && data.length > 0) {
+        //         const supabaseSpots = data.map(s => ({
+        //             id: s.id,
+        //             title: s.title,
+        //             category: s.category || 'Hidden Gem',
+        //             description: s.description,
+        //             location: s.address || 'Mysuru',
+        //             rating: 4.5,
+        //             coords: [s.location_lat || 12.3021, s.location_long || 76.6715],
+        //             image: s.image_url || '/src/assets/mysore-palace-daytime.jpg',
+        //             isVerified: s.is_verified
+        //         }));
+        //         setSpots([...supabaseSpots, ...allPlaces.filter(p => !supabaseSpots.some(s => s.title === p.title))]);
+        //     }
+        // } catch (err) {
+        //     console.warn("Heritage spots not available");
+        // }
     };
 
     // Fetch events from Supabase
+    // NOTE: Disabled until heritage_events table schema is properly configured in Supabase
     const fetchEvents = async () => {
-        try {
-            if (!supabase) return;
-            const { data, error } = await supabase
-                .from('heritage_events')
-                .select('*')
-                .eq('status', 'active')
-                .order('event_date', { ascending: true });
-
-            if (error) throw error;
-            if (data) setEvents(data);
-        } catch (err) {
-            console.error("Error fetching heritage events:", err);
-        }
+        // Uncomment below once heritage_events table has correct columns
+        // try {
+        //     if (!supabase) return;
+        //     const { data, error } = await supabase
+        //         .from('heritage_events')
+        //         .select('*');
+        //     if (error) throw error;
+        //     if (data) setEvents(data);
+        // } catch (err) {
+        //     console.warn("Heritage events not available:", err?.message);
+        // }
     };
 
     React.useEffect(() => {
