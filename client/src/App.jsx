@@ -689,7 +689,7 @@ export const Hero = ({ onExploreClick }) => {
                     name="search"
                     className="block w-full pl-14 pr-32 py-5 border-none rounded-[2rem] leading-5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] transition-all font-medium text-sm md:text-base"
                     placeholder="Search for hidden gems, culture, food..."
-                    autocomplete="off"
+                    autoComplete="off"
                 />
                 <div className="absolute inset-y-2 right-2 flex items-center">
                     <button className="px-5 py-2.5 bg-black dark:bg-[#D4AF37] rounded-[1.5rem] text-white dark:text-black font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/20 dark:shadow-[#D4AF37]/20">
@@ -858,10 +858,10 @@ export const MapComponent = ({ places, destination, interactive = true }) => {
     };
 
     const cabOptions = [
-        { id: 'bike', type: 'Bike / Two-Wheeler', price: '₹42', time: '2 min', icon: '', description: 'Fastest in traffic' },
-        { id: 'auto', type: 'Auto Rickshaw', price: '₹68', time: '3 min', icon: '', description: 'Affordable for 3' },
-        { id: 'mini', type: 'Cab Mini', price: '₹142', time: '5 min', icon: '', description: 'Compact AC cars' },
-        { id: 'prime', type: 'Cab Prime', price: '₹198', time: '6 min', icon: '', description: 'Premium sedans' },
+        { id: 'bike', type: 'Bike / Two-Wheeler', price: '?42', time: '2 min', icon: '', description: 'Fastest in traffic' },
+        { id: 'auto', type: 'Auto Rickshaw', price: '?68', time: '3 min', icon: '', description: 'Affordable for 3' },
+        { id: 'mini', type: 'Cab Mini', price: '?142', time: '5 min', icon: '', description: 'Compact AC cars' },
+        { id: 'prime', type: 'Cab Prime', price: '?198', time: '6 min', icon: '', description: 'Premium sedans' },
     ];
 
     const handleBookNow = (cab) => {
@@ -992,7 +992,7 @@ export const MapComponent = ({ places, destination, interactive = true }) => {
                                     <div className="flex items-center gap-1 text-[10px] text-gray-500 mt-1">
                                         <Star size={10} className="text-yellow-500 fill-current" />
                                         <span>{place.rating}</span>
-                                        <span>₹€¢</span>
+                                        <span>?€¢</span>
                                         <span>{place.category}</span>
                                     </div>
                                 </div>
@@ -1049,7 +1049,7 @@ export const MapComponent = ({ places, destination, interactive = true }) => {
                                             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Estimate</span>
                                             <div className="flex items-center gap-1 mt-1">
                                                 <Car size={14} className="text-mysore-gold" />
-                                                <span className="font-bold text-base">₹‚¹142</span>
+                                                <span className="font-bold text-base">?‚¹142</span>
                                             </div>
                                         </div>
                                     </div>
@@ -2043,7 +2043,7 @@ export const UsersTab = ({ users, filter, setFilter, onDeleteUser }) => {
                                         </span>
                                     </td>
                                     <td className="px-10 py-8">
-                                        <div className="text-xs font-bold text-gray-500">{user.phone || '₹€“'}</div>
+                                        <div className="text-xs font-bold text-gray-500">{user.phone || '?€“'}</div>
                                     </td>
                                     <td className="px-10 py-8 text-xs font-bold text-gray-400">
                                         {user.joinedAt ? new Date(user.joinedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Heritage Epoch'}
@@ -2647,17 +2647,17 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                         <div className="space-y-4">
                                             <div className="relative group">
                                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
-                                                <input type="text" id="signup-fullname" name="fullName" value={signUpData.fullName} onChange={handleSignUpChange} placeholder="Full Name" autocomplete="name" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.fullName ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
+                                                <input type="text" id="signup-fullname" name="fullName" value={signUpData.fullName} onChange={handleSignUpChange} placeholder="Full Name" autoComplete="name" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.fullName ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
                                                 {signUpErrors.fullName && <p className="text-[10px] text-red-500 font-bold mt-1 px-4">{signUpErrors.fullName}</p>}
                                             </div>
                                             <div className="relative group">
                                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
-                                                <input type="email" id="signup-email" name="email" value={signUpData.email} onChange={handleSignUpChange} placeholder="Email" autocomplete="email" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.email ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
+                                                <input type="email" id="signup-email" name="email" value={signUpData.email} onChange={handleSignUpChange} placeholder="Email" autoComplete="email" className={`w-full pl-12 pr-4 py-4 border ${signUpErrors.email ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`} />
                                                 {signUpErrors.email && <p className="text-[10px] text-red-500 font-bold mt-1 px-4">{signUpErrors.email}</p>}
                                             </div>
                                             <div className="relative group">
                                                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
-                                                <input type="tel" id="signup-phone" name="phone" value={signUpData.phone} onChange={handleSignUpChange} placeholder="Phone Number" autocomplete="tel" className="w-full pl-12 pr-4 py-4 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all" />
+                                                <input type="tel" id="signup-phone" name="phone" value={signUpData.phone} onChange={handleSignUpChange} placeholder="Phone Number" autoComplete="tel" className="w-full pl-12 pr-4 py-4 border border-gray-100 dark:border-gray-800 rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all" />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="relative">
@@ -2668,7 +2668,7 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                                         value={signUpData.password}
                                                         onChange={handleSignUpChange}
                                                         placeholder="Password"
-                                                        autocomplete="new-password"
+                                                        autoComplete="new-password"
                                                         className={`w-full pl-5 pr-10 py-4 border ${signUpErrors.password ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`}
                                                     />
                                                     <button
@@ -2688,7 +2688,7 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                                         value={signUpData.confirmPassword}
                                                         onChange={handleSignUpChange}
                                                         placeholder="Confirm"
-                                                        autocomplete="new-password"
+                                                        autoComplete="new-password"
                                                         className={`w-full pl-5 pr-10 py-4 border ${signUpErrors.confirmPassword ? 'border-red-500' : 'border-gray-100 dark:border-gray-800'} rounded-2xl bg-gray-50 dark:bg-gray-800/50 text-sm focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all`}
                                                     />
                                                     <button
@@ -2761,7 +2761,7 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                             value={loginIdentifier}
                                             onChange={(e) => setLoginIdentifier(e.target.value)}
                                             placeholder="Email Address"
-                                            autocomplete="email"
+                                            autoComplete="email"
                                             className="w-full pl-16 pr-6 py-6 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all shadow-inner"
                                             required
                                         />
@@ -2775,7 +2775,7 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
                                             value={loginPassword}
                                             onChange={(e) => setLoginPassword(e.target.value)}
                                             placeholder="Password"
-                                            autocomplete="current-password"
+                                            autoComplete="current-password"
                                             className="w-full pl-16 pr-16 py-6 border border-gray-100 dark:border-gray-800 rounded-[2.5rem] bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all shadow-inner"
                                             required
                                         />
@@ -3673,7 +3673,7 @@ export const EventsTab = ({ partner, spot, setConfirmModal, showNotification }) 
                                     name="price"
                                     value={newEvent.price}
                                     onChange={e => setNewEvent({ ...newEvent, price: e.target.value })}
-                                    placeholder="Free or ₹ Amount"
+                                    placeholder="Free or ? Amount"
                                     className="w-full px-6 py-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white/50 dark:bg-gray-800/50 text-black dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all font-medium"
                                 />
                             </div>
