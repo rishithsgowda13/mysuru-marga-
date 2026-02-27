@@ -88,10 +88,10 @@ export const CategoryItem = ({ icon: _Icon, label, color, bgColor, onClick, isSe
         onClick={() => onClick && onClick(label)}
         className="flex flex-col items-center gap-3 min-w-[80px] group cursor-pointer"
     >
-        <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md ${isSelected ? 'bg-[#D4AF37] ring-4 ring-[#D4AF37]/30 shadow-lg scale-110' : bgColor}`}>
-            <_Icon className={`w-7 h-7 ${isSelected ? 'text-white' : color}`} />
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md ${bgColor} ${isSelected ? 'ring-4 ring-[#D4AF37]/40 shadow-xl scale-110' : ''}`}>
+            <_Icon className={`w-7 h-7 transition-colors duration-300 ${color}`} />
         </div>
-        <span className={`text-[11px] font-bold text-center tracking-tight transition-colors ${isSelected ? 'text-[#D4AF37]' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}>{label}</span>
+        <span className={`text-[11px] font-bold text-center tracking-tight transition-colors duration-300 ${isSelected ? 'text-[#D4AF37] scale-105' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}>{label}</span>
     </div>
 );
 
@@ -412,6 +412,11 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
         // Exclude featured spots from Explore page
         if (featuredIds.includes(place.id)) return false;
 
+        // Only show Hidden Gems if specifically selected
+        const isHiddenGem = place.category === 'Hidden Gem';
+        if (isHiddenGem && selectedCategory !== 'Hidden Gems') return false;
+        if (!isHiddenGem && selectedCategory === 'Hidden Gems') return false;
+
         const matchesSearch = place.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             place.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
             place.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -420,8 +425,9 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
             place.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
             (selectedCategory === 'Hidden Gems' && place.category === 'Hidden Gem');
 
-        // Only show "famous" places (rating >= 4.5)
-        const isFamous = place.rating >= 4.5;
+        // Only show "famous" places (rating >= 4.5) for general browse
+        // Bypass this for Hidden Gems category
+        const isFamous = selectedCategory === 'Hidden Gems' || place.rating >= 4.5;
 
         return matchesSearch && matchesCategory && isFamous;
     });
@@ -4503,8 +4509,8 @@ export const featuredPlaces = [
         image: "/kr-circle-night.webp"
     },
     {
-        id: 'philomena-night',
-        title: "St. Philomena's (Night)",
+        id: 'Lightings',
+        title: "Lightings",
         category: "Heritage",
         categoryColor: "bg-indigo-600",
         description: "The neo-gothic cathedral towers illuminated against the night sky, creating a mystical atmosphere.",
@@ -4516,6 +4522,72 @@ export const featuredPlaces = [
 ];
 
 export const popularPlaces = [
+    {
+        id: 'balmuri-falls',
+        title: "Balmuri Falls",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "A man-made check dam on the Cauvery river, popular for wading through the water and photography.",
+        location: "KRS Road (15km)",
+        rating: 4.6,
+        coords: [12.4214, 76.5912],
+        image: "/balmuri.webp"
+    },
+    {
+        id: 'edmuri-falls',
+        title: "Edmuri Falls",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "A serene waterfall near Balmuri, perfect for a peaceful getaway and refreshing dips.",
+        location: "KRS Road (15km)",
+        rating: 4.4,
+        coords: [12.4225, 76.5895],
+        image: "/edmuri.webp"
+    },
+    {
+        id: 'wax-museum',
+        title: "Melody World Wax Museum",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "A unique museum featuring wax statues of musicians and instruments from across the world.",
+        location: "Siddhartha Layout",
+        rating: 4.3,
+        coords: [12.3015, 76.6855],
+        image: "/wax.webp"
+    },
+    {
+        id: 'karighatta',
+        title: "Karighatta Hill",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "A scenic hill with a Lord Srinivasa temple, offering stunning views of Cauvery and Lokapavani rivers.",
+        location: "Srirangapatna (20km)",
+        rating: 4.7,
+        coords: [12.4285, 76.7125],
+        image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=1000"
+    },
+    {
+        id: 'meenakshipura',
+        title: "Meenakshipura (Backwaters)",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "A tranquil backwater destination with scenic river views, popular for birdwatching and photography.",
+        location: "KRS Backwaters (25km)",
+        rating: 4.5,
+        coords: [12.3855, 76.5425],
+        image: "/meenakshi.webp"
+    },
+    {
+        id: 'venugopalaswamy-temple',
+        title: "Venugopalaswamy Temple",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "An ancient temple submerged for decades, now beautifully restored on the banks of KRS backwaters.",
+        location: "Hosa Kannambadi (30km)",
+        rating: 4.8,
+        coords: [12.4125, 76.5125],
+        image: "/venugopalaswamy.webp"
+    },
     {
         id: 'mysore-palace',
         title: "Mysore Palace (Amba Vilas)",
@@ -4596,13 +4668,13 @@ export const popularPlaces = [
     {
         id: 'sand-sculpture',
         title: "Sand Sculpture Museum",
-        category: "Heritage",
-        categoryColor: "bg-amber-600",
-        description: "Unique museum featuring intricate sand sculptures of heritage themes.",
+        category: "Hidden Gem",
+        categoryColor: "bg-mysore-600",
+        description: "The world's first sand sculpture museum dedicated to artistic themes and culture.",
         location: "Chamundi Hill Road",
         rating: 4.4,
-        coords: [12.2855, 76.6782],
-        image: "/sand_sculpture.png"
+        coords: [12.2921, 76.6851],
+        image: "/sand.webp"
     },
     {
         id: 'rail-museum',
@@ -4735,17 +4807,6 @@ export const popularPlaces = [
         rating: 4.4,
         coords: [12.4258, 76.6575],
         image: "https://images.unsplash.com/photo-1504198453319-5ce911baf2ea?auto=format&fit=crop&q=80&w=1000"
-    },
-    {
-        id: 'balmuri-falls',
-        title: "Balmuri Falls Splash",
-        category: "Adventure",
-        categoryColor: "bg-orange-600",
-        description: "A popular spot for river walks, photography and a refreshing splash in the Cauvery.",
-        location: "KRS Road (15km)",
-        rating: 4.3,
-        coords: [12.4214, 76.5912],
-        image: "https://images.unsplash.com/photo-1433086566547-0243403505bb?auto=format&fit=crop&q=80&w=1000"
     },
     {
         id: 'lalitha-mahal-stay',
