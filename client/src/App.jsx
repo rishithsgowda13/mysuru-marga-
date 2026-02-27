@@ -83,8 +83,11 @@ export const BottomNav = ({ activeTab, setActiveTab }) => {
 };
 
 
-export const CategoryItem = ({ icon: _Icon, label, color, bgColor }) => (
-    <div className="flex flex-col items-center gap-3 min-w-[80px] group cursor-pointer">
+export const CategoryItem = ({ icon: _Icon, label, color, bgColor, onClick }) => (
+    <div
+        onClick={() => onClick && onClick(label)}
+        className="flex flex-col items-center gap-3 min-w-[80px] group cursor-pointer"
+    >
         <div className={`w-16 h-16 rounded-full ${bgColor} flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md`}>
             <_Icon className={`w-7 h-7 ${color}`} />
         </div>
@@ -92,7 +95,7 @@ export const CategoryItem = ({ icon: _Icon, label, color, bgColor }) => (
     </div>
 );
 
-export const Categories = ({ onSeeAllClick }) => {
+export const Categories = ({ onSeeAllClick, onCategoryClick }) => {
     const categories = [
         { icon: LayoutDashboard, label: "Explore", color: "text-blue-600 dark:text-blue-400", bgColor: "bg-blue-50 dark:bg-blue-900/20" },
         { icon: Sparkles, label: "Hidden Gems", color: "text-mysore-600 dark:text-mysore-400", bgColor: "bg-mysore-100 dark:bg-mysore-900/20" },
@@ -118,7 +121,7 @@ export const Categories = ({ onSeeAllClick }) => {
 
             <div className="flex overflow-x-auto gap-4 px-8 pb-4 custom-scrollbar snap-x md:flex md:flex-wrap md:justify-around md:px-12 md:pb-0 md:overflow-visible md:gap-8">
                 {categories.map((cat, index) => (
-                    <CategoryItem key={index} {...cat} />
+                    <CategoryItem key={index} {...cat} onClick={onCategoryClick} />
                 ))}
             </div>
         </div>
@@ -400,19 +403,25 @@ export const EventsSection = ({ events = [] }) => {
 };
 
 
-export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave }) => {
+export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave, selectedCategory, onCategoryClick }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredPlaces = places.filter(place =>
-        place.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        place.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        place.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredPlaces = places.filter(place => {
+        const matchesSearch = place.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            place.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            place.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesCategory = !selectedCategory || selectedCategory === 'Explore' ||
+            place.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+            (selectedCategory === 'Hidden Gems' && place.category === 'Hidden Gem');
+
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <div className="pb-32 bg-white dark:bg-gray-950 min-h-screen">
             <div className="sticky top-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl z-30 px-8 md:px-12 py-6 border-b border-gray-100 dark:border-gray-900 transition-all">
-                <div className="relative max-w-2xl">
+                <div className="relative w-full">
                     <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                         type="text"
@@ -425,14 +434,19 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave 
             </div>
 
             <div className="mt-8">
-                <Categories />
+                <Categories onCategoryClick={onCategoryClick} />
             </div>
 
             <div className="px-8 md:px-12 py-10">
                 <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-3xl font-serif text-gray-900 dark:text-white">
-                        {searchQuery ? `Search Results (${filteredPlaces.length})` : 'All Experiences'}
-                    </h3>
+                    <div className="flex flex-col gap-1">
+                        <h3 className="text-3xl font-serif text-gray-900 dark:text-white">
+                            {selectedCategory && selectedCategory !== 'Explore' ? selectedCategory : 'All Experiences'}
+                        </h3>
+                        {searchQuery && (
+                            <p className="text-xs text-gray-400 font-medium">Showing results for "{searchQuery}"</p>
+                        )}
+                    </div>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">
                         <Compass size={14} />
                         <span>Discovering Mysuru</span>
@@ -530,8 +544,8 @@ export const FeaturedCard = ({ place, onClick, isSaved, onToggleSave }) => (
 );
 
 export const FeaturedSection = ({ places = [], onCardClick, savedPlaceIds = [], onToggleSave, onSeeAllClick }) => {
-    // Show first 5 places from the dynamic list for mobile scroll, or 4 for desktop grid
-    const displayPlaces = places.length > 0 ? places.slice(0, 5) : featuredPlaces;
+    // Show all available places in the featured grid
+    const displayPlaces = places.length > 0 ? places : featuredPlaces;
 
     return (
         <div className="py-8 transition-colors duration-200">
@@ -4459,15 +4473,37 @@ export const ToggleItem = ({ icon: _Icon, label, defaultChecked, checked, onTogg
 // --- STATIC DATA ---
 export const featuredPlaces = [
     {
-        id: 'karanji-lake',
-        title: "Karanji Lake",
+        id: 'krs-dam',
+        title: "KRS Dam (Krishna Raja Sagara)",
+        category: "Engineering",
+        categoryColor: "bg-blue-600",
+        description: "A historic gravity dam across the Cauvery River, an architectural and engineering marvel of its time.",
+        location: "Mandya District",
+        rating: 4.7,
+        coords: [12.4239, 76.5746],
+        image: "/krs.png"
+    },
+    {
+        id: 'brindavan-gardens',
+        title: "Brindavan Gardens",
         category: "Nature",
-        categoryColor: "bg-green-500",
-        description: "Serene nature trail with butterfly park and panoramic palace views",
-        location: "Siddhartha Layout",
-        rating: 4.3,
-        coords: [12.3021, 76.6715],
-        image: "/karanji.jpg"
+        categoryColor: "bg-emerald-500",
+        description: "Terraced garden near KRS Dam, famous for its symmetrical design and musical fountain.",
+        location: "KRS Dam Road",
+        rating: 4.8,
+        coords: [12.4219, 76.5726],
+        image: "/brindavan.png"
+    },
+    {
+        id: 'ranganathittu',
+        title: "Ranganathittu Bird Sanctuary",
+        category: "Wildlife",
+        categoryColor: "bg-teal-600",
+        description: "The largest bird sanctuary in Karnataka, home to migratory birds and scenic boat rides.",
+        location: "Srirangapatna",
+        rating: 4.6,
+        coords: [12.4258, 76.6575],
+        image: "/ranganathittu.png"
     }
 ];
 
@@ -4517,17 +4553,6 @@ export const popularPlaces = [
         image: "/zoo.png"
     },
     {
-        id: 'brindavan-gardens',
-        title: "Brindavan Gardens",
-        category: "Nature",
-        categoryColor: "bg-emerald-500",
-        description: "Terraced garden near KRS Dam, famous for its symmetrical design and musical fountain.",
-        location: "KRS Dam Road",
-        rating: 4.5,
-        coords: [12.4219, 76.5726],
-        image: "/brindavan.png"
-    },
-    {
         id: 'jaganmohan-palace',
         title: "Jaganmohan Palace",
         category: "Heritage",
@@ -4548,6 +4573,105 @@ export const popularPlaces = [
         rating: 4.3,
         coords: [12.3021, 76.6715],
         image: "/karanji.jpg"
+    },
+    {
+        id: 'kukkarahalli-lake',
+        title: "Kukkarahalli Lake",
+        category: "Nature",
+        categoryColor: "bg-green-600",
+        description: "A favorite spot for birdwatchers and walkers, especially during sunset.",
+        location: "Saraswathipuram",
+        rating: 4.5,
+        coords: [12.3082, 76.6341],
+        image: "/kukkarahalli.png"
+    },
+    {
+        id: 'sand-sculpture',
+        title: "Sand Sculpture Museum",
+        category: "Heritage",
+        categoryColor: "bg-amber-600",
+        description: "Unique museum featuring intricate sand sculptures of heritage themes.",
+        location: "Chamundi Hill Road",
+        rating: 4.4,
+        coords: [12.2855, 76.6782],
+        image: "/sand_sculpture.png"
+    },
+    {
+        id: 'rail-museum',
+        title: "Mysore Rail Museum",
+        category: "Heritage",
+        categoryColor: "bg-amber-700",
+        description: "Features vintage locomotives and galleries documenting rail history.",
+        location: "KRS Road",
+        rating: 4.6,
+        coords: [12.3168, 76.6434],
+        image: "/rail_museum.png"
+    },
+    {
+        id: 'lingambudhi-lake',
+        title: "Lingambudhi Lake",
+        category: "Nature",
+        categoryColor: "bg-green-500",
+        description: "A tranquil perennial lake known for its biodiversity and walking paths.",
+        location: "Ramakrishna Nagar",
+        rating: 4.2,
+        coords: [12.2685, 76.6214],
+        image: "/lingambudhi.png"
+    },
+    {
+        id: 'sandalwood-carving',
+        title: "Sandalwood Carving Artisan",
+        category: "Artisans",
+        categoryColor: "bg-rose-600",
+        description: "Authentic workshop showing the delicate art of carving Mysore sandalwood.",
+        location: "Mandi Mohalla",
+        rating: 4.8,
+        coords: [12.3214, 76.6521],
+        image: "/sandalwood.png"
+    },
+    {
+        id: 'silk-weaving',
+        title: "Mysore Silk Weaving",
+        category: "Artisans",
+        categoryColor: "bg-rose-500",
+        description: "Witness the creation of the world-famous Mysore Silk sarees with gold zari.",
+        location: "KSIC Factory",
+        rating: 4.7,
+        coords: [12.2905, 76.6452],
+        image: "/silk.png"
+    },
+    {
+        id: 'mylari-dosa',
+        title: "Original Mylari Dosa",
+        category: "Food",
+        categoryColor: "bg-emerald-600",
+        description: "Legendary breakfast spot known for its unique, cloud-soft butter dosas.",
+        location: "Nazarbad",
+        rating: 4.9,
+        coords: [12.3090, 76.6660],
+        image: "/mylari.png"
+    },
+    {
+        id: 'mysore-pak',
+        title: "Traditional Mysore Pak",
+        category: "Food",
+        categoryColor: "bg-emerald-500",
+        description: "Taste the authentic melt-in-your-mouth sweet that defined Mysore's cuisine.",
+        location: "Guru Sweets",
+        rating: 4.8,
+        coords: [12.3045, 76.6545],
+        image: "/mysorepak.png"
+    },
+    {
+        id: 'devaraja-market',
+        title: "Devaraja Market",
+        category: "Heritage",
+        categoryColor: "bg-amber-600",
+        description: "Vibrant local market with piles of kumkum, flowers, and local produce.",
+        location: "City Center",
+        rating: 4.6,
+        coords: [12.3105, 76.6515],
+        image: "/devaraja.png"
     }
 ];
 
@@ -4586,6 +4710,7 @@ function App() {
         const saved = localStorage.getItem('activeTab');
         return (saved && saved !== 'details') ? saved : 'home';
     });
+    const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [mapDestination, setMapDestination] = useState(null);
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -4921,7 +5046,16 @@ function App() {
                 return (
                     <>
                         <Hero onExploreClick={() => setActiveTab('explore')} />
-                        <Categories onSeeAllClick={() => setActiveTab('explore')} />
+                        <Categories
+                            onSeeAllClick={() => {
+                                setSelectedCategory(null);
+                                setActiveTab('explore');
+                            }}
+                            onCategoryClick={(category) => {
+                                setSelectedCategory(category);
+                                setActiveTab('explore');
+                            }}
+                        />
                         <FeaturedSection
                             places={spots}
                             onCardClick={handleFeaturedCardClick}
@@ -4939,6 +5073,8 @@ function App() {
                         savedPlaceIds={savedPlaceIds}
                         onToggleSave={toggleSave}
                         onCardClick={handlePlaceClick}
+                        selectedCategory={selectedCategory}
+                        onCategoryClick={setSelectedCategory}
                     />
                 );
             case 'MapComponent':
@@ -4984,7 +5120,10 @@ function App() {
                         <Navbar
                             onProfileClick={() => setActiveTab('profile')}
                             activeTab={activeTab}
-                            setActiveTab={setActiveTab}
+                            setActiveTab={(id) => {
+                                if (id === 'explore') setSelectedCategory(null);
+                                setActiveTab(id);
+                            }}
                         />
                     </div>
                 </div>
@@ -4998,7 +5137,13 @@ function App() {
 
             {activeTab !== 'profile' && activeTab !== 'details' && (
                 <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
-                    <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <BottomNav
+                        activeTab={activeTab}
+                        setActiveTab={(id) => {
+                            if (id === 'explore') setSelectedCategory(null);
+                            setActiveTab(id);
+                        }}
+                    />
                 </div>
             )}
 
