@@ -3627,6 +3627,22 @@ export const PartnerOverviewTab = ({ spot, setActiveTab, feedbacks }) => {
 
 export const ManageSpotTab = ({ spot }) => {
     const { t } = useTranslation();
+    const [products, setProducts] = useState(spot.products || []);
+    const [showProductModal, setShowProductModal] = useState(false);
+    const [newProduct, setNewProduct] = useState({ description: '', image: '', priceRange: '' });
+
+    const handleAddProduct = () => {
+        if (newProduct.description && newProduct.priceRange) {
+            setProducts([...products, { ...newProduct, id: Date.now() }]);
+            setNewProduct({ description: '', image: '', priceRange: '' });
+            setShowProductModal(false);
+        }
+    };
+
+    const handleRemoveProduct = (id) => {
+        setProducts(products.filter(p => p.id !== id));
+    };
+
     return (
         <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden px-10 py-12">
             <h3 className="text-3xl font-serif text-black dark:text-white mb-10">{t('curationDetails')}</h3>
@@ -3653,6 +3669,48 @@ export const ManageSpotTab = ({ spot }) => {
                             <option>Nature</option>
                         </select>
                     </div>
+                </div>
+
+                {/* Products Section */}
+                <div className="bg-white/50 dark:bg-gray-800/30 p-8 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-inner">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Products & Offerings</label>
+                            <p className="text-xs text-gray-500 font-medium">Add items or experiences available at this spot.</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setShowProductModal(true)}
+                            className="bg-black dark:bg-[#D4AF37] text-white dark:text-black px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md transition-transform hover:scale-105 self-start sm:self-auto shrink-0"
+                        >
+                            + Add Product
+                        </button>
+                    </div>
+
+                    {products.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            {products.map(prod => (
+                                <div key={prod.id} className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm relative group">
+                                    {prod.image && (
+                                        <div className="w-full h-32 mb-4 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                                            <img src={prod.image} alt="Product" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        </div>
+                                    )}
+                                    <div className="pr-8">
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white mb-1 leading-tight">{prod.description}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">{prod.priceRange}</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveProduct(prod.id)}
+                                        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-50 hover:bg-red-50 dark:bg-gray-700 dark:hover:bg-red-500/20 text-gray-400 hover:text-red-500 rounded-xl transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div>
@@ -3710,6 +3768,99 @@ export const ManageSpotTab = ({ spot }) => {
                     </button>
                 </div>
             </form>
+
+            {/* Product Modal */}
+            {showProductModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 sm:p-0">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowProductModal(false)}></div>
+                    <div className="bg-white dark:bg-gray-900 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 w-full max-w-md relative z-10 p-8 sm:p-10 animate-in zoom-in-95 duration-300">
+                        <h3 className="text-2xl font-serif text-black dark:text-white mb-6">Add Product</h3>
+                        <div className="space-y-5">
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Description</label>
+                                <input
+                                    type="text"
+                                    value={newProduct.description}
+                                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                                    placeholder="Product description (e.g. Handmade Silk Saree)"
+                                    className="w-full px-5 py-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Product Image (Optional)</label>
+                                <div
+                                    className="w-full relative border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-6 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800/80 transition-colors cursor-pointer group"
+                                    onDragOver={(e) => e.preventDefault()}
+                                    onDrop={(e) => {
+                                        e.preventDefault();
+                                        const file = e.dataTransfer.files[0];
+                                        if (file && file.type.startsWith('image/')) {
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => setNewProduct({ ...newProduct, image: e.target.result });
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                >
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (e) => setNewProduct({ ...newProduct, image: e.target.result });
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                    {newProduct.image ? (
+                                        <div className="relative w-full h-32 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+                                            <img src={newProduct.image} alt="Preview" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span className="text-white text-[10px] font-black uppercase tracking-widest bg-black/50 px-3 py-1.5 rounded-lg backdrop-blur-sm">Change Image</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-900 flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform ring-1 ring-gray-100 dark:ring-gray-800">
+                                                <Camera size={20} className="text-[#D4AF37]" />
+                                            </div>
+                                            <p className="text-xs font-bold text-gray-600 dark:text-gray-300">Click or drag image here</p>
+                                            <p className="text-[10px] font-medium text-gray-400 mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Price Range</label>
+                                <input
+                                    type="text"
+                                    value={newProduct.priceRange}
+                                    onChange={(e) => setNewProduct({ ...newProduct, priceRange: e.target.value })}
+                                    placeholder="e.g. ₹500 - ₹2000"
+                                    className="w-full px-5 py-3 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none text-sm"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex gap-3 mt-8">
+                            <button
+                                onClick={() => setShowProductModal(false)}
+                                className="flex-1 py-4 text-gray-400 font-black text-[10px] uppercase tracking-widest hover:text-black dark:hover:text-white transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleAddProduct}
+                                disabled={!newProduct.description || !newProduct.priceRange}
+                                className="flex-1 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest bg-black dark:bg-[#D4AF37] text-white dark:text-black shadow-xl disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
