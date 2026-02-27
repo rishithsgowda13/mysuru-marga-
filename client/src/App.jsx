@@ -29,6 +29,163 @@ export const supabase = (supabaseUrl && supabaseAnonKey)
     : null;
 
 
+
+export const ChatBot = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [messages, setMessages] = useState([
+        {
+            role: 'assistant',
+            content: "Greetings, traveler! I am your Heritage Guide to the City of Palaces. Pranam! How may I assist your exploration of Mysuru today?"
+        }
+    ]);
+    const [inputMessage, setInputMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const messagesEndRef = useRef(null);
+    const inputRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    useEffect(() => {
+        if (isOpen && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isOpen]);
+
+    const sendMessage = async () => {
+        if (!inputMessage.trim() || isLoading) return;
+
+        const userMessage = inputMessage.trim();
+        setInputMessage('');
+
+        setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+        setIsLoading(true);
+
+        // Simulated Royal Heritage AI response
+        setTimeout(() => {
+            const responses = [
+                "A fine query! The Amba Vilas Palace is best viewed at twilight when its illumination begins.",
+                "Mysuru Silk is a legacy of the Wadiyars. For the most authentic experience, visit the Government Silk Weaving Factory.",
+                "The fragrance of Sandalwood is the soul of our city. I recommend exploring the local markets near Devaraja Market.",
+                "Mysore Pak was invented in the royal kitchens. You must try it at Guru Sweet Mart, the direct descendants of the inventor!"
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+
+            setMessages(prev => [...prev, { role: 'assistant', content: randomResponse }]);
+            setIsLoading(false);
+        }, 1500);
+    };
+
+    const handleKey = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    };
+
+    return (
+        <div className="fixed bottom-24 right-6 md:bottom-8 md:right-8 z-[1000] font-sans">
+            {!isOpen ? (
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="w-16 h-16 bg-gradient-to-br from-[#D4AF37] via-[#B8941F] to-[#8A6D14] text-black rounded-full shadow-[0_10px_30px_rgba(212,175,55,0.4)] hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group border-2 border-white/20"
+                >
+                    <div className="relative">
+                        <MessageSquare className="w-7 h-7 group-hover:rotate-12 transition-transform" />
+                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border border-white"></span>
+                        </span>
+                    </div>
+                </button>
+            ) : (
+                <div className="w-[350px] sm:w-[380px] h-[550px] bg-[#111827] rounded-[2.5rem] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden border border-[#D4AF37]/30 border-b-8 border-b-[#D4AF37] animate-in slide-in-from-bottom-6 transition-all">
+                    {/* Royal Header */}
+                    <div className="p-6 bg-gradient-to-r from-[#111827] to-[#1f2937] flex items-center justify-between border-b border-[#D4AF37]/20">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-[#D4AF37] flex items-center justify-center p-2.5 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                                <Compass className="w-full h-full text-[#111827]" />
+                            </div>
+                            <div>
+                                <h3 className="text-[#D4AF37] font-serif text-lg leading-none mb-1">Heritage Guide</h3>
+                                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest">Sovereign Edition</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className="bg-white/5 hover:bg-white/10 p-2 rounded-xl transition-all"
+                        >
+                            <X className="w-5 h-5 text-gray-400" />
+                        </button>
+                    </div>
+
+                    {/* Royal Conversations */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]">
+                        {messages.map((m, idx) => (
+                            <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in duration-500`}>
+                                <div className={`relative px-4 py-3 rounded-2xl text-sm leading-relaxed max-w-[85%] shadow-xl ${m.role === 'user'
+                                    ? 'bg-[#D4AF37] text-[#111827] rounded-tr-none font-bold'
+                                    : 'bg-white/5 text-gray-200 border border-[#D4AF37]/20 rounded-tl-none font-medium backdrop-blur-md'
+                                    }`}>
+                                    {m.content}
+                                    {m.role === 'assistant' && (
+                                        <div className="absolute -left-2 -top-2 w-5 h-5 bg-[#D4AF37] rounded-full flex items-center justify-center shadow-lg border-2 border-[#111827]">
+                                            <Sparkles className="w-2.5 h-2.5 text-[#111827]" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                        {isLoading && (
+                            <div className="flex justify-start">
+                                <div className="bg-white/5 border border-[#D4AF37]/20 rounded-2xl px-5 py-3 rounded-tl-none flex items-center gap-3">
+                                    <div className="flex gap-1">
+                                        <span className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                        <span className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full animate-bounce"></span>
+                                    </div>
+                                    <span className="text-[10px] italic text-[#D4AF37] font-serif">Consulting chronicles...</span>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+
+                    {/* Royal Input */}
+                    <div className="p-6 bg-[#111827] border-t border-[#D4AF37]/10">
+                        <div className="relative group">
+                            <textarea
+                                ref={inputRef}
+                                value={inputMessage}
+                                onChange={(e) => setInputMessage(e.target.value)}
+                                onKeyDown={handleKey}
+                                placeholder="Consult the Guide..."
+                                rows="1"
+                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 pr-14 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30 transition-all resize-none custom-scrollbar"
+                            />
+                            <button
+                                onClick={sendMessage}
+                                disabled={!inputMessage.trim() || isLoading}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#D4AF37] hover:scale-110 active:scale-95 text-[#111827] rounded-xl flex items-center justify-center transition-all disabled:opacity-50 disabled:scale-100 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                            >
+                                <Send className="w-5 h-5" />
+                            </button>
+                        </div>
+                        <p className="text-[9px] text-gray-500 mt-3 text-center uppercase tracking-widest font-bold">
+                            Royal Heritage Intelligence
+                        </p>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 export const BottomNavItem = ({ icon: _Icon, label, active, onClick }) => {
     return (
         <button
@@ -2692,9 +2849,9 @@ export const TravaAI = ({ onBack }) => {
                 {messages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-500`}>
                         <div className={`relative max-w-[80%] md:max-w-[70%] p-5 rounded-3xl ${m.role === 'user'
-                            ? 'bg-gradient-to-br from-[#D4AF37] to-[#B8962F] text-white shadow-xl shadow-amber-900/10 rounded-tr-none'
-                            : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-200 shadow-sm rounded-tl-none'}`}>
-                            <p className="text-sm md:text-base leading-relaxed font-medium">{m.content}</p>
+                            ? 'bg-[#D4AF37] text-black shadow-xl shadow-amber-900/10 rounded-tr-none font-bold'
+                            : 'bg-white dark:bg-gray-800 border border-[#D4AF37]/20 dark:border-gray-700 text-gray-800 dark:text-gray-200 shadow-sm rounded-tl-none font-medium'}`}>
+                            <p className="text-sm md:text-base leading-relaxed">{m.content}</p>
                         </div>
                     </div>
                 ))}
@@ -2730,8 +2887,8 @@ export const TravaAI = ({ onBack }) => {
             {/* Trip Essentials Card */}
             <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white dark:border-gray-800 shadow-xl space-y-8">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl shadow-inner">
-                        <Compass className="w-6 h-6 text-indigo-600" />
+                    <div className="p-3 bg-amber-100 dark:bg-[#D4AF37]/10 rounded-2xl shadow-inner">
+                        <Compass className="w-6 h-6 text-[#D4AF37]" />
                     </div>
                     <div>
                         <h3 className="text-2xl font-serif text-gray-900 dark:text-white">Trip Essentials</h3>
@@ -2743,15 +2900,15 @@ export const TravaAI = ({ onBack }) => {
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Trip Identity</label>
                         <div className="relative group">
-                            <Tag className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-indigo-600 transition-colors" />
-                            <input value={formData.tripName} onChange={e => setFormData({ ...formData, tripName: e.target.value })} placeholder="e.g., Summer in Royal City" className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-medium focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all shadow-sm" />
+                            <Tag className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
+                            <input value={formData.tripName} onChange={e => setFormData({ ...formData, tripName: e.target.value })} placeholder="e.g., Summer in Royal City" className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-medium focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                         </div>
                     </div>
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Origin City</label>
                         <div className="relative group">
-                            <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-indigo-600 transition-colors" />
-                            <input value={formData.startingFrom} onChange={e => setFormData({ ...formData, startingFrom: e.target.value })} placeholder="e.g., Bangalore / Delhi" className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-medium focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all shadow-sm" />
+                            <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
+                            <input value={formData.startingFrom} onChange={e => setFormData({ ...formData, startingFrom: e.target.value })} placeholder="e.g., Bangalore / Delhi" className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-medium focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                         </div>
                     </div>
                 </div>
@@ -2760,15 +2917,15 @@ export const TravaAI = ({ onBack }) => {
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Specific Destinations</label>
                         <div className="relative group">
-                            <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-indigo-600 transition-colors" />
-                            <input value={formData.destinations} onChange={e => setFormData({ ...formData, destinations: e.target.value })} placeholder="Srigiripura, Devaraja Market..." className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-medium focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all shadow-sm" />
+                            <Landmark className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
+                            <input value={formData.destinations} onChange={e => setFormData({ ...formData, destinations: e.target.value })} placeholder="Srigiripura, Devaraja Market..." className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-medium focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                         </div>
                     </div>
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Traveling Party Size</label>
                         <div className="relative group">
-                            <Users className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-indigo-600 transition-colors" />
-                            <input type="number" min="1" value={formData.travelers} onChange={e => setFormData({ ...formData, travelers: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all shadow-sm" />
+                            <Users className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 group-focus-within:text-[#D4AF37] transition-colors" />
+                            <input type="number" min="1" value={formData.travelers} onChange={e => setFormData({ ...formData, travelers: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                         </div>
                     </div>
                 </div>
@@ -2804,7 +2961,7 @@ export const TravaAI = ({ onBack }) => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Who's Coming Along?</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {["Solo", "Couple", "Family", "Friends"].map(p => (
-                            <button key={p} onClick={() => setFormData({ ...formData, persona: p })} className={`py-4 rounded-3xl text-xs font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.persona === p ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-600/20 scale-105' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600 hover:text-indigo-600'}`}>
+                            <button key={p} onClick={() => setFormData({ ...formData, persona: p })} className={`py-4 rounded-3xl text-xs font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.persona === p ? 'bg-[#D4AF37] text-black border-[#D4AF37] shadow-xl shadow-amber-900/20 scale-105' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-[#D4AF37] hover:text-[#D4AF37]'}`}>
                                 {p}
                             </button>
                         ))}
@@ -2826,8 +2983,8 @@ export const TravaAI = ({ onBack }) => {
             {/* Timeline & Pace Card */}
             <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white dark:border-gray-800 shadow-xl space-y-10">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl">
-                        <Calendar className="w-6 h-6 text-emerald-600" />
+                    <div className="p-3 bg-amber-100 dark:bg-[#D4AF37]/10 rounded-2xl">
+                        <Calendar className="w-6 h-6 text-[#D4AF37]" />
                     </div>
                     <div>
                         <h3 className="text-2xl font-serif text-gray-900 dark:text-white">Timeline & Pace</h3>
@@ -2838,11 +2995,11 @@ export const TravaAI = ({ onBack }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Start Date</label>
-                        <input type="date" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm" />
+                        <input type="date" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                     </div>
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">End Date</label>
-                        <input type="date" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm" />
+                        <input type="date" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-amber-500/10 outline-none transition-all shadow-sm" />
                     </div>
                 </div>
 
@@ -2850,7 +3007,7 @@ export const TravaAI = ({ onBack }) => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Exploration Pace</label>
                     <div className="flex gap-4">
                         {["Relaxed", "Balanced", "Intense"].map(p => (
-                            <button key={p} onClick={() => setFormData({ ...formData, pace: p })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.pace === p ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-600/20' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600'}`}>
+                            <button key={p} onClick={() => setFormData({ ...formData, pace: p })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.pace === p ? 'bg-black dark:bg-[#D4AF37] text-white dark:text-black border-black dark:border-[#D4AF37] shadow-xl' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-black dark:hover:border-[#D4AF37]'}`}>
                                 {p}
                             </button>
                         ))}
@@ -2862,14 +3019,14 @@ export const TravaAI = ({ onBack }) => {
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Arrival Time</label>
                         <div className="relative group">
                             <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <input type="time" value={formData.arrivalTime} onChange={e => setFormData({ ...formData, arrivalTime: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm" />
+                            <input type="time" value={formData.arrivalTime} onChange={e => setFormData({ ...formData, arrivalTime: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                         </div>
                     </div>
                     <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Departure Time</label>
                         <div className="relative group">
                             <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                            <input type="time" value={formData.departureTime} onChange={e => setFormData({ ...formData, departureTime: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm" />
+                            <input type="time" value={formData.departureTime} onChange={e => setFormData({ ...formData, departureTime: e.target.value })} className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 pl-14 pr-6 py-5 rounded-[1.5rem] text-sm font-bold focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all shadow-sm" />
                         </div>
                     </div>
                 </div>
@@ -2878,8 +3035,8 @@ export const TravaAI = ({ onBack }) => {
             {/* Budget & Comfort Card */}
             <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white dark:border-gray-800 shadow-xl space-y-10">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-2xl">
-                        <Database className="w-6 h-6 text-purple-600" />
+                    <div className="p-3 bg-amber-100 dark:bg-[#D4AF37]/10 rounded-2xl">
+                        <Database className="w-6 h-6 text-[#D4AF37]" />
                     </div>
                     <div>
                         <h3 className="text-2xl font-serif text-gray-900 dark:text-white">Budget & Comfort</h3>
@@ -2891,7 +3048,7 @@ export const TravaAI = ({ onBack }) => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Investment Level</label>
                     <div className="flex gap-4">
                         {["Budget", "Moderate", "Luxury"].map(b => (
-                            <button key={b} onClick={() => setFormData({ ...formData, budget: b })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.budget === b ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-600/20' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600'}`}>
+                            <button key={b} onClick={() => setFormData({ ...formData, budget: b })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.budget === b ? 'bg-black dark:bg-[#D4AF37] text-white dark:text-black border-black dark:border-[#D4AF37] shadow-xl' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-black dark:hover:border-[#D4AF37]'}`}>
                                 {b}
                             </button>
                         ))}
@@ -2902,7 +3059,7 @@ export const TravaAI = ({ onBack }) => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Stay Preference</label>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {["Hostel", "Homestay", "Comfort", "Grandeur"].map(a => (
-                            <button key={a} onClick={() => setFormData({ ...formData, accommodation: a })} className={`py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.accommodation === a ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600'}`}>
+                            <button key={a} onClick={() => setFormData({ ...formData, accommodation: a })} className={`py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.accommodation === a ? 'bg-black dark:bg-[#D4AF37] text-white dark:text-black border-black dark:border-[#D4AF37] shadow-lg' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-black dark:hover:border-[#D4AF37]'}`}>
                                 {a}
                             </button>
                         ))}
@@ -2913,8 +3070,8 @@ export const TravaAI = ({ onBack }) => {
             {/* Food & Motion Card */}
             <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white dark:border-gray-800 shadow-xl space-y-12">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-rose-100 dark:bg-rose-900/30 rounded-2xl">
-                        <Utensils className="w-6 h-6 text-rose-600" />
+                    <div className="p-3 bg-amber-100 dark:bg-[#D4AF37]/10 rounded-2xl">
+                        <Utensils className="w-6 h-6 text-[#D4AF37]" />
                     </div>
                     <div>
                         <h3 className="text-2xl font-serif text-gray-900 dark:text-white">Food & Transport</h3>
@@ -2926,7 +3083,7 @@ export const TravaAI = ({ onBack }) => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Culinary Path</label>
                     <div className="flex gap-3 flex-wrap">
                         {["ANYTHING", "VEGETARIAN", "NON-VEG", "VEGAN", "JAIN"].map(d => (
-                            <button key={d} onClick={() => setFormData({ ...formData, diet: d })} className={`flex-1 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.diet === d ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600'}`}>
+                            <button key={d} onClick={() => setFormData({ ...formData, diet: d })} className={`flex-1 py-4 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.diet === d ? 'bg-black dark:bg-[#D4AF37] text-white dark:text-black border-black dark:border-[#D4AF37] shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-black dark:hover:border-[#D4AF37]'}`}>
                                 {d}
                             </button>
                         ))}
@@ -2938,7 +3095,7 @@ export const TravaAI = ({ onBack }) => {
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Transit Mode</label>
                         <div className="flex gap-4">
                             {["Personal", "Rickshaw/Public"].map(t => (
-                                <button key={t} onClick={() => setFormData({ ...formData, transport: t })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.transport === t ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600'}`}>
+                                <button key={t} onClick={() => setFormData({ ...formData, transport: t })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.transport === t ? 'bg-black dark:bg-[#D4AF37] text-white dark:text-black border-black dark:border-[#D4AF37] shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-black dark:hover:border-[#D4AF37]'}`}>
                                     {t}
                                 </button>
                             ))}
@@ -2948,7 +3105,7 @@ export const TravaAI = ({ onBack }) => {
                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Vehicle Preference</label>
                         <div className="flex gap-4">
                             {["Two Wheeler", "Four Wheeler"].map(v => (
-                                <button key={v} onClick={() => setFormData({ ...formData, vehicleType: v })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.vehicleType === v ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-indigo-600'}`}>
+                                <button key={v} onClick={() => setFormData({ ...formData, vehicleType: v })} className={`flex-1 py-5 rounded-3xl text-[10px] font-black uppercase tracking-widest transition-all border transform active:scale-95 ${formData.vehicleType === v ? 'bg-black dark:bg-[#D4AF37] text-white dark:text-black border-black dark:border-[#D4AF37] shadow-md' : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-100 dark:border-gray-700 hover:border-black dark:hover:border-[#D4AF37]'}`}>
                                     {v}
                                 </button>
                             ))}
@@ -2960,8 +3117,8 @@ export const TravaAI = ({ onBack }) => {
             {/* Special Instructions Card */}
             <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white dark:border-gray-800 shadow-xl space-y-6">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
-                        <FileText className="w-6 h-6 text-blue-600" />
+                    <div className="p-3 bg-amber-100 dark:bg-[#D4AF37]/10 rounded-2xl">
+                        <FileText className="w-6 h-6 text-[#D4AF37]" />
                     </div>
                     <div>
                         <h3 className="text-2xl font-serif text-gray-900 dark:text-white">Special Instructions</h3>
@@ -2972,7 +3129,7 @@ export const TravaAI = ({ onBack }) => {
                     value={formData.specialRequests}
                     onChange={e => setFormData({ ...formData, specialRequests: e.target.value })}
                     placeholder="E.g., Traveling with seniors, need wheelchair access, interested in local oil painting workshops, prefer quiet mornings..."
-                    className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-8 rounded-[2rem] text-sm md:text-base h-48 resize-none focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:italic font-medium shadow-inner"
+                    className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-8 rounded-[2rem] text-sm md:text-base h-48 resize-none focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all placeholder:italic font-medium shadow-inner"
                 />
             </div>
 
@@ -2993,47 +3150,47 @@ export const TravaAI = ({ onBack }) => {
     );
 
     return (
-        <div className="flex flex-col h-screen max-h-screen bg-[#F8F9FA] dark:bg-gray-950 transition-colors overflow-hidden font-sans">
+        <div className="flex flex-col h-screen max-h-screen bg-[#F8F9FA] dark:bg-[#090909] transition-colors overflow-hidden font-sans">
             {/* Immersive Cinematic Header */}
-            <div className="bg-gradient-to-br from-[#1a1c2c] via-[#4a148c] to-[#311b92] p-10 pt-16 relative overflow-hidden shrink-0 shadow-2xl">
+            <div className="bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 relative overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20">
                 {/* Dynamic Background Noise/Glows */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] -mr-48 -mt-48 transition-all duration-1000"></div>
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[100px] -ml-24 -mb-24"></div>
+                <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]"></div>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[120px] -mr-48 -mt-48 transition-all duration-1000"></div>
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#D4AF37]/5 rounded-full blur-[100px] -ml-24 -mb-24"></div>
 
                 <button
                     onClick={onBack}
-                    className="absolute left-6 top-8 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 active:scale-90 z-30"
+                    className="absolute left-6 top-8 w-12 h-12 bg-white/5 hover:bg-[#D4AF37]/10 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 active:scale-90 z-30"
                 >
-                    <ArrowLeft size={22} />
+                    <ArrowLeft size={22} className="text-[#D4AF37]" />
                 </button>
 
                 <div className="flex flex-col items-center text-center space-y-4 relative z-10">
                     <div className="flex items-center gap-4 animate-in zoom-in duration-700">
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-2xl rounded-3xl flex items-center justify-center shadow-[inset_0_2px_10px_rgba(255,255,255,0.2)] border border-white/30 transform hover:rotate-12 transition-transform duration-500">
-                            <Sparkles className="text-white w-9 h-9 animate-pulse" />
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#D4AF37] to-[#B8962F] rounded-3xl flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.3)] border border-white/20 transform hover:rotate-12 transition-transform duration-500">
+                            <Sparkles className="text-black w-9 h-9 animate-pulse" />
                         </div>
                         <div className="text-left">
-                            <h2 className="text-white text-5xl font-serif tracking-tight">Trava AI</h2>
-                            <p className="text-indigo-200 text-[10px] font-black uppercase tracking-[0.4em] mt-1 ml-1 opacity-80">Heritage Intelligence</p>
+                            <h2 className="text-[#D4AF37] text-5xl font-serif tracking-tight">Trava AI</h2>
+                            <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.4em] mt-1 ml-1 opacity-80">Heritage Intelligence</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="mt-12 flex justify-center">
-                    <div className="bg-black/30 backdrop-blur-3xl p-2 rounded-[2rem] flex border border-white/10 shadow-3xl">
+                    <div className="bg-black/40 backdrop-blur-3xl p-2 rounded-[2rem] flex border border-[#D4AF37]/20 shadow-3xl">
                         <button
                             onClick={() => setMode('chat')}
-                            className={`px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${mode === 'chat' ? 'bg-white text-indigo-900 shadow-2xl scale-100' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+                            className={`px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${mode === 'chat' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
                         >
-                            <MessageSquare size={14} className={mode === 'chat' ? 'text-indigo-600' : 'text-white/40'} />
+                            <MessageSquare size={14} className={mode === 'chat' ? 'text-black' : 'text-gray-600'} />
                             Chat Interface
                         </button>
                         <button
                             onClick={() => setMode('planner')}
-                            className={`px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${mode === 'planner' ? 'bg-white text-indigo-900 shadow-2xl scale-100' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+                            className={`px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${mode === 'planner' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
                         >
-                            <LayoutDashboard size={14} className={mode === 'planner' ? 'text-indigo-600' : 'text-white/40'} />
+                            <LayoutDashboard size={14} className={mode === 'planner' ? 'text-black' : 'text-gray-600'} />
                             Dynamic Planner
                         </button>
                     </div>
@@ -4794,6 +4951,11 @@ function App() {
                 <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)] bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800">
                     <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
+            )}
+
+            {/* Premium Heritage Guide ChatBot */}
+            {isAuthenticated && userRole === 'user' && activeTab !== 'profile' && activeTab !== 'details' && activeTab !== 'planner' && (
+                <ChatBot />
             )}
         </div>
     );
