@@ -83,19 +83,19 @@ export const BottomNav = ({ activeTab, setActiveTab }) => {
 };
 
 
-export const CategoryItem = ({ icon: _Icon, label, color, bgColor, onClick }) => (
+export const CategoryItem = ({ icon: _Icon, label, color, bgColor, onClick, isSelected }) => (
     <div
         onClick={() => onClick && onClick(label)}
         className="flex flex-col items-center gap-3 min-w-[80px] group cursor-pointer"
     >
-        <div className={`w-16 h-16 rounded-full ${bgColor} flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md`}>
-            <_Icon className={`w-7 h-7 ${color}`} />
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:shadow-md ${isSelected ? 'bg-[#D4AF37] ring-4 ring-[#D4AF37]/30 shadow-lg scale-110' : bgColor}`}>
+            <_Icon className={`w-7 h-7 ${isSelected ? 'text-white' : color}`} />
         </div>
-        <span className="text-[11px] font-bold text-gray-600 dark:text-gray-400 text-center tracking-tight group-hover:text-gray-900 dark:group-hover:text-white transition-colors">{label}</span>
+        <span className={`text-[11px] font-bold text-center tracking-tight transition-colors ${isSelected ? 'text-[#D4AF37]' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}>{label}</span>
     </div>
 );
 
-export const Categories = ({ onSeeAllClick, onCategoryClick }) => {
+export const Categories = ({ onSeeAllClick, onCategoryClick, selectedCategory }) => {
     const categories = [
         { icon: LayoutDashboard, label: "Explore", color: "text-blue-600 dark:text-blue-400", bgColor: "bg-blue-50 dark:bg-blue-900/20" },
         { icon: Sparkles, label: "Hidden Gems", color: "text-mysore-600 dark:text-mysore-400", bgColor: "bg-mysore-100 dark:bg-mysore-900/20" },
@@ -121,7 +121,7 @@ export const Categories = ({ onSeeAllClick, onCategoryClick }) => {
 
             <div className="flex overflow-x-auto gap-4 px-8 pb-4 custom-scrollbar snap-x md:flex md:flex-wrap md:justify-around md:px-12 md:pb-0 md:overflow-visible md:gap-8">
                 {categories.map((cat, index) => (
-                    <CategoryItem key={index} {...cat} onClick={onCategoryClick} />
+                    <CategoryItem key={index} {...cat} onClick={onCategoryClick} isSelected={selectedCategory === cat.label} />
                 ))}
             </div>
         </div>
@@ -437,7 +437,7 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
             </div>
 
             <div className="mt-8">
-                <Categories onCategoryClick={onCategoryClick} />
+                <Categories onCategoryClick={onCategoryClick} selectedCategory={selectedCategory} />
             </div>
 
             <div className="px-8 md:px-12 py-10">
@@ -1196,7 +1196,7 @@ export const Navbar = ({ onProfileClick, activeTab, setActiveTab }) => {
         <button
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${activeTab === id
-                ? 'bg-mysore-100 dark:bg-mysore-900/30 text-mysore-700 dark:text-mysore-400 font-bold'
+                ? 'bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/30 font-bold'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
         >
@@ -4506,7 +4506,7 @@ export const featuredPlaces = [
         location: "Hill Top Viewpoint",
         rating: 4.8,
         coords: [12.2753, 76.6701],
-        image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=1000"
+        image: "/chamundi.png"
     },
     {
         id: 'philomena-night',
@@ -4517,7 +4517,7 @@ export const featuredPlaces = [
         location: "Ashoka Road",
         rating: 4.7,
         coords: [12.3209, 76.6593],
-        image: "https://images.unsplash.com/photo-1548013146-72479768bbaa?auto=format&fit=crop&q=80&w=1000"
+        image: "/philomena.png"
     }
 ];
 
@@ -5157,6 +5157,7 @@ function App() {
                                 setSelectedCategory(category);
                                 setActiveTab('explore');
                             }}
+                            selectedCategory={selectedCategory}
                         />
                         <FeaturedSection
                             places={spots.slice(0, 4)}
