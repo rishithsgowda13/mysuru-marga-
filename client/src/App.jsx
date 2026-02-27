@@ -4487,15 +4487,15 @@ export const featuredPlaces = [
         image: "https://images.unsplash.com/photo-1582298538104-fe2e74c27f59?auto=format&fit=crop&q=80&w=1000"
     },
     {
-        id: 'dasara-exhibition',
-        title: "Dasara Exhibition",
-        category: "Entertainment",
+        id: 'kr-circle-dasara',
+        title: "K.R. Circle Tower (Night)",
+        category: "Festival",
         categoryColor: "bg-purple-600",
-        description: "A festive wonderland of colorful lights, amusement rides, and vibrant stalls at the Doddakere Maidana.",
-        location: "Exhibition Grounds",
-        rating: 4.7,
-        coords: [12.3015, 76.6590],
-        image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=1000"
+        description: "The heart of Mysore glowing in festive light, centered around the iconic Maharaja Chamarajendra Wodeyar statue circle.",
+        location: "K.R. Circle",
+        rating: 4.8,
+        coords: [12.3051, 76.6551],
+        image: "https://images.unsplash.com/photo-1616422335193-4a0d92375537?auto=format&fit=crop&q=80&w=1000"
     },
     {
         id: 'chamundi-night',
