@@ -18,8 +18,9 @@
   }
 
   body {
-    background-color: #f8f9fa;
-    @apply dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200;
+    background: linear-gradient(180deg, #f3e3ad 0%, #fefae0 30%, #ffffff 100%) no-repeat fixed;
+    background-size: cover;
+    @apply text-gray-900 dark:text-white transition-colors duration-200;
   }
 
   #root {
@@ -55,6 +56,17 @@
 
   .dark .custom-scrollbar {
     scrollbar-color: #374151 transparent;
+  }
+
+  /* Universal Mysore Pale Gold Gradient */
+  .mysore-main-bg {
+    background: linear-gradient(180deg, #f3e3ad 0%, #fefae0 30%, #ffffff 100%) no-repeat fixed;
+    background-size: cover;
+  }
+
+  .dark .mysore-main-bg {
+    background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%) no-repeat fixed;
+    background-size: cover;
   }
 }
 

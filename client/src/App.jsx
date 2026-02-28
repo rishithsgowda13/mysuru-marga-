@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Home, Compass, Map as MapIcon, Heart, Sparkles, Palette, Utensils, MapPin, Landmark, TreePine,
@@ -7,7 +7,7 @@ import {
     Check, MessageSquare, Users, BarChart3, LogOut, Shield, Inbox, Handshake,
     TrendingUp, Settings, Bell, Lock, Globe, Database, ExternalLink, Download,
     Trash2, RefreshCcw, Eye, EyeOff, Mail, Phone, HelpCircle, Info, Moon, FileText,
-    LayoutDashboard, Store, Camera, Plus, Ticket, History
+    LayoutDashboard, Store, Camera, Plus, Ticket, History, ArrowRightCircle, MessageSquareQuote, Bike
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -411,25 +411,32 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
     });
 
     return (
-        <div className="pb-32 bg-mysore-50 dark:bg-gray-950 min-h-screen">
-            <div className="sticky top-[80px] md:top-[88px] bg-mysore-50/80 dark:bg-gray-950/80 backdrop-blur-xl z-30 px-6 md:px-12 py-4 md:py-6 border-b border-gray-100 dark:border-gray-900 transition-all">
-                <div className="relative w-full">
-                    <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search heritage, nature, food..."
-                        className="w-full bg-gray-50 dark:bg-gray-900 rounded-[1.5rem] py-3.5 md:py-4 pl-14 pr-6 text-sm font-medium dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/10 transition-all placeholder-gray-400"
-                    />
+        <div className="min-h-screen bg-transparent flex flex-col">
+            {/* Search & Filter Header */}
+            <div className="z-30 transition-all duration-300">
+                {/* Search Bar Container */}
+                <div className="bg-[#f3e3ad]/60 dark:bg-black/60 backdrop-blur-2xl border-b border-[#D4AF37]/10 px-6 md:px-12 py-5 md:py-6 shadow-sm">
+                    <div className="max-w-7xl mx-auto w-full relative group">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#D4AF37] transition-colors w-5 h-5 pointer-events-none" />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search heritage, nature, food..."
+                            className="w-full bg-white dark:bg-gray-900 rounded-[2rem] py-4 md:py-5 pl-16 pr-8 text-sm md:text-base font-medium dark:text-gray-100 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/10 transition-all placeholder-gray-400 shadow-inner"
+                        />
+                    </div>
+                </div>
+
+                {/* Categories Bar Container - Sticks below search */}
+                <div className="bg-[#f3e3ad]/40 dark:bg-black/40 backdrop-blur-xl border-b border-[#D4AF37]/5 px-0 md:px-6">
+                    <div className="max-w-7xl mx-auto">
+                        <Categories onCategoryClick={onCategoryClick} selectedCategory={selectedCategory} />
+                    </div>
                 </div>
             </div>
 
-            <div className="mt-8">
-                <Categories onCategoryClick={onCategoryClick} selectedCategory={selectedCategory} />
-            </div>
-
-            <div className="px-8 md:px-12 py-10">
+            <div className="flex-1 px-6 md:px-12 py-10 max-w-7xl mx-auto w-full">
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex flex-col gap-1">
                         <h3 className="text-3xl font-serif text-gray-900 dark:text-white">
@@ -555,7 +562,7 @@ export const FeaturedSection = ({ places = [], onCardClick, savedPlaceIds = [], 
             </div>
 
             {/* Responsive Container: Horizontal Scroll on Mobile, Grid on Desktop */}
-            <div className="flex space-x-6 overflow-x-auto px-8 pb-8 md:px-12 md:pb-0 md:space-x-0 md:grid md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 md:gap-8 custom-scrollbar md:overflow-visible snap-x">
+            <div className="flex space-x-6 overflow-x-auto px-8 pb-8 md:px-12 md:pb-0 md:space-x-0 md:grid md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:gap-8 custom-scrollbar md:overflow-visible snap-x">
                 {displayPlaces.map((place, index) => (
                     <div
                         key={place.id}
@@ -803,7 +810,7 @@ export const Loader = ({ onFinish }) => {
     if (!isVisible) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#f8f9fa] flex-col overflow-hidden transition-opacity duration-1000">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center mysore-main-bg flex-col overflow-hidden transition-opacity duration-1000">
             <div className="relative flex flex-col items-center">
 
                 {/* Logo Text */}
@@ -1286,8 +1293,9 @@ export const PlaceCard = ({ image, category, title, description, location, ratin
 };
 
 
-export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, onGetDirections }) => {
+export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, onGetDirections, allPlaces, onPlaceClick }) => {
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const [localFeedbacks, setLocalFeedbacks] = useState([]);
     const scrollContainerRef = useRef(null);
 
     useEffect(() => {
@@ -1297,11 +1305,9 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
     }, [place]);
 
     useEffect(() => {
-        // Load initial feedbacks
         const feedbacks = JSON.parse(localStorage.getItem('user_feedback') || '[]');
         setLocalFeedbacks(feedbacks);
 
-        // Listen for new feedbacks
         const handleStorageChange = () => {
             const updatedFeedbacks = JSON.parse(localStorage.getItem('user_feedback') || '[]');
             setLocalFeedbacks(updatedFeedbacks);
@@ -1310,6 +1316,21 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
+
+    const nearbyPlaces = useMemo(() => {
+        if (!place || !place.coords || !allPlaces) return [];
+        return allPlaces
+            .filter(p => p.id !== place.id && p.coords)
+            .map(p => ({
+                ...p,
+                distance: Math.sqrt(
+                    Math.pow(p.coords[0] - place.coords[0], 2) +
+                    Math.pow(p.coords[1] - place.coords[1], 2)
+                )
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, 4);
+    }, [place, allPlaces]);
 
     if (!place) return null;
 
@@ -1326,160 +1347,192 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
     };
 
     return (
-        <div className="relative flex flex-col h-full bg-white dark:bg-gray-900 animate-in fade-in slide-in-from-right duration-300 overflow-hidden">
-            {/* Scrollable Content Container */}
+        <div className="relative flex flex-col h-full bg-[#f3e3ad]/20 dark:bg-gray-950 animate-in fade-in slide-in-from-right duration-500 overflow-hidden">
+            {/* Transparent Header Over Image */}
+            <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-black/40 to-transparent z-20 pointer-events-none" />
+
             <div
                 ref={scrollContainerRef}
-                className="flex-1 overflow-y-auto pb-40 custom-scrollbar"
+                className="flex-1 overflow-y-auto pb-40 custom-scrollbar scroll-smooth"
             >
-                {/* Hero Image Section */}
-                <div className="relative h-[380px] w-full shrink-0">
+                {/* Hero section */}
+                <div className="relative h-[450px] md:h-[550px] w-full shrink-0 group">
                     <img
                         src={place.image}
                         alt={place.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
                     />
-                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-                    {/* Top Controls */}
-                    <div className="absolute top-6 inset-x-0 px-6 flex items-center justify-between z-10">
+                    {/* Back & Action Buttons */}
+                    <div className="absolute top-8 inset-x-8 flex items-center justify-between z-30">
                         <button
                             onClick={onBack}
-                            className="p-3 bg-black/30 backdrop-blur-xl rounded-2xl text-white border border-white/20 hover:bg-black/40 transition-all active:scale-90"
+                            className="w-12 h-12 bg-white/10 backdrop-blur-2xl rounded-2xl flex items-center justify-center text-white border border-white/20 hover:bg-white/20 hover:scale-110 active:scale-90 transition-all shadow-2xl"
                         >
                             <ChevronLeft className="w-6 h-6" />
                         </button>
-                        <div className="flex gap-3">
+                        <div className="flex gap-4">
                             <button
                                 onClick={handleShare}
-                                className="p-3 bg-black/30 backdrop-blur-xl rounded-2xl text-white border border-white/20 hover:bg-black/40 transition-all active:scale-90"
+                                className="w-12 h-12 bg-white/10 backdrop-blur-2xl rounded-2xl flex items-center justify-center text-white border border-white/20 hover:bg-white/20 hover:scale-110 active:scale-90 transition-all shadow-2xl"
                             >
                                 <Share2 className="w-5 h-5" />
                             </button>
                             <button
                                 onClick={(e) => onToggleSave(e, place.id)}
-                                className={`p-3 backdrop-blur-xl rounded-2xl border border-white/20 transition-all active:scale-90 ${isSaved ? 'bg-red-500 text-white border-red-400' : 'bg-black/30 text-white'
-                                    }`}
+                                className={`w-12 h-12 backdrop-blur-2xl rounded-2xl flex items-center justify-center border border-white/20 transition-all hover:scale-110 active:scale-90 shadow-2xl ${isSaved ? 'bg-red-500 text-white border-red-400' : 'bg-white/10 text-white'}`}
                             >
                                 <Heart className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
                             </button>
                         </div>
                     </div>
 
-                    <div className="absolute bottom-12 left-6 right-6 z-10">
-                        <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-white shadow-lg ${place.categoryColor || 'bg-amber-600'}`}>
-                            {place.category}
-                        </span>
-                        <h1 className="text-4xl font-serif text-white mt-4 drop-shadow-2xl leading-tight">{place.title}</h1>
+                    {/* Title & Floating Info */}
+                    <div className="absolute bottom-16 left-8 right-8 z-20">
+                        <div className="flex flex-col gap-4 animate-in slide-in-from-bottom-6 duration-1000">
+                            <div className="flex items-center gap-3">
+                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl backdrop-blur-md border border-white/20 ${place.categoryColor || 'bg-amber-600'}`}>
+                                    {place.category}
+                                </span>
+                                <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                    <span className="text-xs font-black text-white">{place.rating}</span>
+                                </div>
+                            </div>
+                            <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight leading-[0.9] drop-shadow-2xl">
+                                {place.title}
+                            </h1>
+                            <div className="flex items-center gap-2 text-gray-300 font-medium">
+                                <MapPin size={16} className="text-[#D4AF37]" />
+                                <span className="text-sm md:text-base uppercase tracking-widest opacity-80">{place.location}</span>
+                            </div>
+                        </div>
                     </div>
+
+                    {/* Curve overlay */}
+                    <div className="absolute -bottom-1 inset-x-0 h-10 bg-[#f3e3ad]/20 dark:bg-gray-950 rounded-t-[3rem] z-30" />
                 </div>
 
-                {/* Content Section */}
-                <div className="relative px-6 pt-10 -mt-8 bg-white dark:bg-gray-900 rounded-t-[40px] shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
-                    <div className="flex flex-col gap-8">
-                        {/* Rating and Quick Stats */}
-                        <div className="flex items-center gap-6">
-                            <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-100/50 dark:border-amber-800/30">
-                                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                                <span className="text-lg font-black text-gray-900 dark:text-white">{place.rating}</span>
-                                <span className="text-xs text-amber-700/60 dark:text-amber-400/60 font-medium">(120+ reviews)</span>
+                {/* Main Content Area */}
+                <div className="px-8 md:px-12 pt-16 pb-20 space-y-16">
+                    {/* Quick Info Grid */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-white/80 dark:bg-gray-800/60 p-7 rounded-[2.5rem] border border-[#D4AF37]/20 dark:border-gray-700 shadow-xl backdrop-blur-md group transition-all hover:scale-[1.02] hover:shadow-2xl flex flex-col items-center text-center">
+                            <div className="w-12 h-12 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <Clock className="w-6 h-6 text-amber-500" />
                             </div>
-                            <div className="flex -space-x-3">
-                                {[1, 2, 3, 4].map((i) => (
-                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 bg-gray-200 overflow-hidden">
-                                        <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" className="w-full h-full object-cover" />
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Visiting Hours</h4>
+                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{place.visitingTime || '10:00 AM - 5:30 PM'}</p>
+                        </div>
+                        <div className="bg-white/80 dark:bg-gray-800/60 p-7 rounded-[2.5rem] border border-[#D4AF37]/20 dark:border-gray-700 shadow-xl backdrop-blur-md group transition-all hover:scale-[1.02] hover:shadow-2xl flex flex-col items-center text-center">
+                            <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <IndianRupee className="w-6 h-6 text-emerald-500" />
+                            </div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Ticket Price</h4>
+                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{place.ticketFee || 'Free/Minimal'}</p>
+                        </div>
+                        <div className="bg-white/80 dark:bg-gray-800/60 p-7 rounded-[2.5rem] border border-[#D4AF37]/20 dark:border-gray-700 shadow-xl backdrop-blur-md group transition-all hover:scale-[1.02] hover:shadow-2xl flex flex-col items-center text-center">
+                            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <Calendar className="w-6 h-6 text-blue-500" />
+                            </div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Best To Visit</h4>
+                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{place.bestTimeToVisit || 'September to March'}</p>
+                        </div>
+                        <div className="bg-white/80 dark:bg-gray-800/60 p-7 rounded-[2.5rem] border border-[#D4AF37]/20 dark:border-gray-700 shadow-xl backdrop-blur-md group transition-all hover:scale-[1.02] hover:shadow-2xl flex flex-col items-center text-center">
+                            <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <Sparkles className="w-6 h-6 text-purple-500" />
+                            </div>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Popular Time</h4>
+                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{place.popularTime || 'Evenings (4PM - 7PM)'}</p>
+                        </div>
+                    </div>
+
+                    {/* About Section */}
+                    <div className="max-w-4xl">
+                        <h2 className="text-xs font-black uppercase tracking-[0.3em] text-[#D4AF37] mb-4">The Story</h2>
+                        <p className="text-xl md:text-2xl font-serif text-gray-800 dark:text-gray-200 leading-relaxed italic">
+                            "{place.story || place.description}"
+                        </p>
+                    </div>
+
+                    {/* Heritage & History Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {place.history && (
+                            <div className="p-8 bg-slate-50 dark:bg-slate-900/40 rounded-[2.5rem] border-l-8 border-slate-400 shadow-sm">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="p-3 bg-slate-200 dark:bg-slate-800 rounded-2xl">
+                                        <History className="text-slate-700 dark:text-slate-300 w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-2xl font-serif text-slate-900 dark:text-slate-100">Historical Legacy</h3>
+                                </div>
+                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm md:text-base">
+                                    {place.history}
+                                </p>
+                            </div>
+                        )}
+                        {place.heritage && (
+                            <div className="p-8 bg-amber-50/50 dark:bg-amber-900/10 rounded-[2.5rem] border-l-8 border-amber-400 shadow-sm">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="p-3 bg-amber-200 dark:bg-amber-800 rounded-2xl">
+                                        <Landmark className="text-amber-700 dark:text-amber-300 w-6 h-6" />
+                                    </div>
+                                    <h3 className="text-2xl font-serif text-amber-900 dark:text-amber-100">Cultural Heritage</h3>
+                                </div>
+                                <p className="text-amber-800/70 dark:text-amber-400/70 leading-relaxed text-sm md:text-base font-medium">
+                                    {place.heritage}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Nearby Attractions */}
+                    {nearbyPlaces.length > 0 && (
+                        <div>
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-3xl font-serif text-gray-900 dark:text-white tracking-tight">Nearby Attractions</h2>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Within 2-5 KM</span>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                {nearbyPlaces.map(nearby => (
+                                    <div
+                                        key={nearby.id}
+                                        onClick={() => onPlaceClick(nearby)}
+                                        className="group cursor-pointer space-y-3"
+                                    >
+                                        <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-lg transform group-hover:-translate-y-2 transition-transform duration-500">
+                                            <img src={nearby.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={nearby.title} />
+                                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                                                <div className="flex items-center gap-1">
+                                                    <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                                                    <span className="text-[10px] font-bold text-white">{nearby.rating}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100 group-hover:text-[#D4AF37] transition-colors">{nearby.title}</h4>
                                     </div>
                                 ))}
-                                <div className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
-                                    +8k
-                                </div>
                             </div>
                         </div>
+                    )}
 
-                        {/* Description */}
-                        <div>
-                            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-3">Overview</h2>
-                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg font-medium">
-                                {place.description}
-                            </p>
+                    {/* Review Section */}
+                    <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-12">
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <h2 className="text-3xl font-serif text-gray-900 dark:text-white mb-2">Visitor Experiences</h2>
+                                <p className="text-xs text-gray-400 uppercase tracking-widest font-black">Shared by the Mysuru Community</p>
+                            </div>
+                            <button
+                                onClick={() => setShowReviewForm(!showReviewForm)}
+                                className="px-8 py-4 bg-[#D4AF37]/10 text-[#D4AF37] rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#D4AF37] hover:text-white transition-all active:scale-95"
+                            >
+                                {showReviewForm ? 'Go Back' : 'Share Experience'}
+                            </button>
                         </div>
 
-                        {/* Essential Info Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-700 transition-hover hover:border-amber-200">
-                                <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm mb-3">
-                                    <Clock className="w-5 h-5 text-mysore-600" />
-                                </div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Timings</h4>
-                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{place.visitingTime || '8:00 AM - 7:00 PM'}</p>
-                            </div>
-                            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-700 transition-hover hover:border-amber-200">
-                                <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm mb-3">
-                                    <IndianRupee className="w-5 h-5 text-emerald-600" />
-                                </div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Entry Fee</h4>
-                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{place.ticketFee || 'Free Entry'}</p>
-                            </div>
-                            <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-700 transition-hover hover:border-amber-200">
-                                <div className="w-10 h-10 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm mb-3">
-                                    <MapPin className="w-5 h-5 text-blue-600" />
-                                </div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Location</h4>
-                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{place.location}</p>
-                            </div>
-                        </div>
-
-                        {/* History & Heritage */}
-                        <div className="space-y-6">
-                            {(place.history || place.heritage) ? (
-                                <>
-                                    {place.history && (
-                                        <div className="p-6 bg-slate-50 dark:bg-gray-800/30 rounded-[2rem] border-l-4 border-slate-400">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-slate-200 dark:bg-slate-800 rounded-xl">
-                                                    <History className="w-5 h-5 text-slate-700" />
-                                                </div>
-                                                <h3 className="text-xl font-serif text-slate-900 dark:text-slate-100">Historical Significance</h3>
-                                            </div>
-                                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed whitespace-pre-line">
-                                                {place.history}
-                                            </p>
-                                        </div>
-                                    )}
-                                    {place.heritage && (
-                                        <div className="p-6 bg-amber-50/50 dark:bg-amber-900/10 rounded-[2rem] border-l-4 border-amber-400">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-amber-200 dark:bg-amber-800 rounded-xl">
-                                                    <Landmark className="w-5 h-5 text-amber-700" />
-                                                </div>
-                                                <h3 className="text-xl font-serif text-amber-900 dark:text-amber-100">Heritage Value</h3>
-                                            </div>
-                                            <p className="text-amber-800/70 dark:text-amber-400/70 text-sm leading-relaxed whitespace-pre-line font-medium italic">
-                                                {place.heritage}
-                                            </p>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-[2rem] border border-dashed border-gray-200 dark:border-gray-700">
-                                    <p className="text-sm text-gray-500 italic">History and heritage details coming soon for this location.</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Reviews Section */}
-                        <div className="mt-4 mb-20">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-2xl font-serif text-gray-900 dark:text-white">Visitor Reviews</h2>
-                                <button
-                                    onClick={() => setShowReviewForm(!showReviewForm)}
-                                    className="px-6 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 font-bold text-sm hover:bg-amber-100 transition-colors"
-                                >
-                                    {showReviewForm ? 'Back to Reviews' : 'Leave a Review'}
-                                </button>
-                            </div>
-
-                            {showReviewForm ? (
+                        {showReviewForm ? (
+                            <div className="max-w-2xl animate-in slide-in-from-bottom-4 duration-500">
                                 <FeedbackSection
                                     userEmail={userEmail}
                                     onSuccess={() => {
@@ -1488,58 +1541,50 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
                                         setTimeout(() => setShowReviewForm(false), 2000);
                                     }}
                                 />
-                            ) : (
-                                <div className="space-y-4">
-                                    {localFeedbacks.length === 0 ? (
-                                        <div className="p-12 text-center bg-gray-50 dark:bg-gray-800/30 rounded-[2rem] border border-gray-100 dark:border-gray-800">
-                                            <div className="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm mx-auto mb-4">
-                                                <MessageSquare className="w-8 h-8 text-gray-200" />
-                                            </div>
-                                            <p className="text-gray-400 font-medium">No reviews yet for this spot.</p>
-                                        </div>
-                                    ) : (
-                                        localFeedbacks.map((fb) => (
-                                            <div key={fb.id} className="p-6 bg-gray-50 dark:bg-gray-800/40 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm">
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {localFeedbacks.length === 0 ? (
+                                    <div className="p-16 text-center bg-gray-50 dark:bg-gray-800/30 rounded-[3rem] border border-dashed border-gray-200 dark:border-gray-700">
+                                        <MessageSquareQuote size={40} className="mx-auto text-gray-200 mb-4" />
+                                        <p className="text-gray-400 font-medium italic">Be the first to share your journey here...</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {localFeedbacks.map((fb) => (
+                                            <div key={fb.id} className="p-8 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-[2.5rem] shadow-sm hover:shadow-md transition-shadow">
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold">
+                                                        <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/20 flex items-center justify-center text-[#D4AF37] font-black text-xl">
                                                             {fb.userEmail?.charAt(0).toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">{fb.userEmail?.split('@')[0]}</p>
-                                                            <div className="flex gap-1">
+                                                            <p className="font-black text-gray-900 dark:text-white text-xs uppercase tracking-widest">{fb.userEmail?.split('@')[0]}</p>
+                                                            <div className="flex gap-1 mt-1">
                                                                 {[1, 2, 3, 4, 5].map((star) => (
-                                                                    <Star key={star} size={12} className={star <= fb.rating ? "fill-amber-400 text-amber-400" : "text-gray-200"} />
+                                                                    <Star key={star} size={10} className={star <= fb.rating ? "fill-[#D4AF37] text-[#D4AF37]" : "text-gray-200 dark:text-gray-700"} />
                                                                 ))}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <span className="text-[10px] text-gray-400 font-black uppercase">{new Date(fb.timestamp).toLocaleDateString()}</span>
                                                 </div>
-                                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed italic text-sm">"{fb.comment}"</p>
+                                                <p className="text-gray-600 dark:text-gray-400 italic text-base leading-relaxed">
+                                                    "{fb.comment}"
+                                                </p>
                                             </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Premium Sticky Actions */}
-            <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-white via-white dark:from-gray-900 dark:via-gray-900 to-transparent pt-12 z-20">
-                <div className="flex gap-4 max-w-2xl mx-auto">
-                    <button
-                        onClick={() => {
-                            const url = `https://m.uber.com/ul/?action=setPickup&client_id=YOUR_CLIENT_ID&pickup=my_location&dropoff[formatted_address]=${place.title}+Mysore&dropoff[nickname]=${place.title}`;
-                            window.open(url, '_blank');
-                        }}
-                        className="flex-1 bg-black text-white font-black h-16 rounded-[24px] flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all"
-                    >
-                        <Car className="w-5 h-5 text-amber-400" />
-                        <span className="uppercase tracking-[0.1em] text-sm">Book Ride</span>
-                    </button>
+            {/* Smart Navigation & Booking Bar */}
+            <div className="fixed bottom-0 inset-x-0 p-6 md:p-8 pt-12 md:pt-16 bg-gradient-to-t from-[#fcf6e5] via-[#fcf6e5]/98 dark:from-gray-950 dark:via-gray-950/98 to-transparent z-50">
+                <div className="max-w-4xl mx-auto flex flex-row gap-3 md:gap-4 items-stretch h-16 md:h-20">
+                    {/* Primary Direction Button */}
                     <button
                         onClick={() => {
                             if (onGetDirections) {
@@ -1549,10 +1594,38 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
                                 window.open(url, '_blank');
                             }
                         }}
-                        className="flex-1 bg-[#D4AF37] text-white font-black h-16 rounded-[24px] flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] transition-all"
+                        className="flex-[3] bg-black dark:bg-[#D4AF37] text-white dark:text-black font-black rounded-[2rem] flex items-center justify-center gap-2 md:gap-4 shadow-2xl hover:scale-[1.02] active:scale-95 transition-all group overflow-hidden"
                     >
-                        <Navigation className="w-5 h-5 fill-current" />
-                        <span className="uppercase tracking-[0.1em] text-sm">View on Map</span>
+                        <Compass className="w-5 h-5 md:w-6 md:h-6 animate-spin-slow group-hover:animate-spin" />
+                        <div className="text-left">
+                            <span className="hidden md:block text-[10px] uppercase tracking-widest opacity-60">Interactive Map</span>
+                            <span className="block text-[10px] md:text-xs uppercase tracking-[0.2em]">Get Directions</span>
+                        </div>
+                    </button>
+
+                    {/* Quick Booking Options */}
+                    <button
+                        onClick={() => {
+                            const url = `https://m.uber.com/ul/?action=setPickup&client_id=YOUR_CLIENT_ID&pickup=my_location&dropoff[formatted_address]=${place.title}+Mysore&dropoff[nickname]=${place.title}`;
+                            window.open(url, '_blank');
+                        }}
+                        className="flex-1 bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 rounded-[2rem] flex flex-col items-center justify-center gap-1 hover:bg-black hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-black transition-all group shadow-xl"
+                        title="Book via Uber"
+                    >
+                        <Car className="w-5 h-5 text-gray-400 group-hover:text-inherit" />
+                        <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest uppercase">Uber</span>
+                    </button>
+                    <button
+                        onClick={() => {
+                            // Rapido deep link simulation (generally rapido://)
+                            const url = `https://www.rapido.bike/`;
+                            window.open(url, '_blank');
+                        }}
+                        className="flex-1 bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 rounded-[2rem] flex flex-col items-center justify-center gap-1 hover:bg-black hover:text-white dark:hover:bg-[#D4AF37] dark:hover:text-black transition-all group shadow-xl"
+                        title="Book via Rapido"
+                    >
+                        <Bike className="w-5 h-5 text-gray-400 group-hover:text-inherit" />
+                        <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">Rapido</span>
                     </button>
                 </div>
             </div>
@@ -1579,7 +1652,7 @@ export const Saved = ({ savedPlaceIds = [], allPlaces = [], onToggleSave, onCard
     }
 
     return (
-        <div className="px-4 py-4 pb-20">
+        <div className="px-4 py-8 pb-10">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Saved Places ({savedPlaces.length})</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {savedPlaces.map(place => (
@@ -1773,7 +1846,7 @@ export const AdminDashboard = ({ onLogout }) => {
     };
 
     return (
-        <div className="min-h-screen bg-mysore-light dark:bg-mysore-dark font-sans transition-colors duration-500 flex selection:bg-[#D4AF37]/30">
+        <div className="min-h-screen mysore-main-bg font-sans transition-colors duration-500 flex selection:bg-[#D4AF37]/30">
             {/* Sidebar */}
             <aside className="fixed inset-y-0 left-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl w-72 border-r border-gray-100 dark:border-gray-800 shadow-2xl z-30 hidden lg:flex flex-col">
                 <div className="p-10 flex items-center gap-3">
@@ -2553,10 +2626,10 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
         /* LEGACY LOCAL STORAGE - DISABLED FOR SECURITY
         const usersDB = JSON.parse(localStorage.getItem('usersDB') || '[]');
         if (!usersDB.some(u => u.email === signUpData.email)) {
-             usersDB.push(newUser);
-             localStorage.setItem('usersDB', JSON.stringify(usersDB));
+                usersDB.push(newUser);
+            localStorage.setItem('usersDB', JSON.stringify(usersDB));
         }
-        */
+            */
 
         if (!supabase) {
             localStorage.setItem('userData', JSON.stringify(newUser));
@@ -2598,7 +2671,7 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
     };
 
     return (
-        <div className="min-h-screen bg-mysore-light dark:bg-mysore-dark flex items-center justify-center p-6 transition-colors duration-500 overflow-hidden font-sans">
+        <div className="min-h-screen mysore-main-bg flex items-center justify-center p-6 transition-colors duration-500 overflow-hidden font-sans">
             {/* Background Decorative Blurs */}
             <div className="absolute inset-0 z-0 opacity-40 dark:opacity-20 pointer-events-none">
                 <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#D4AF37]/20 rounded-full blur-[150px] animate-pulse"></div>
@@ -2941,23 +3014,23 @@ export const TravaAI = ({ onBack }) => {
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
             const prompt = `Generate a detailed Mysuru travel itinerary based on these user preferences:
-Theme/Identity: ${formData.tripName || 'My Mysuru Trip'}
-Starting City: ${formData.startingFrom || 'Anywhere'}
-Specific Places Interested: ${formData.destinations || 'Any'}
-Travelers Count: ${formData.travelers}
-Core Theme: ${formData.theme}
-Persona: ${formData.persona}
-Interests: ${formData.interests.join(', ') || 'General Sightseeing'}
-Dates: from ${formData.startDate || 'flexible'} to ${formData.endDate || 'flexible'}
-Pace: ${formData.pace}
-Timings: Arrival at ${formData.arrivalTime || 'flexible'}, Departure at ${formData.departureTime || 'flexible'}
-Budget: ${formData.budget}
-Accommodation Type: ${formData.accommodation}
-Dietary Preference: ${formData.diet}
-Transport: ${formData.transport} (${formData.vehicleType})
-Special Requests: ${formData.specialRequests || 'None'}
+            Theme/Identity: ${formData.tripName || 'My Mysuru Trip'}
+            Starting City: ${formData.startingFrom || 'Anywhere'}
+            Specific Places Interested: ${formData.destinations || 'Any'}
+            Travelers Count: ${formData.travelers}
+            Core Theme: ${formData.theme}
+            Persona: ${formData.persona}
+            Interests: ${formData.interests.join(', ') || 'General Sightseeing'}
+            Dates: from ${formData.startDate || 'flexible'} to ${formData.endDate || 'flexible'}
+            Pace: ${formData.pace}
+            Timings: Arrival at ${formData.arrivalTime || 'flexible'}, Departure at ${formData.departureTime || 'flexible'}
+            Budget: ${formData.budget}
+            Accommodation Type: ${formData.accommodation}
+            Dietary Preference: ${formData.diet}
+            Transport: ${formData.transport} (${formData.vehicleType})
+            Special Requests: ${formData.specialRequests || 'None'}
 
-Please provide a highly structured, day-by-day (or logical if dates are flexible) itinerary that is directly aligned with these choices. Make it immersive, accurate, practical, and highly detailed. Incorporate local Mysuru culture. Give it a royal, welcoming introductory tone.`;
+            Please provide a highly structured, day-by-day (or logical if dates are flexible) itinerary that is directly aligned with these choices. Make it immersive, accurate, practical, and highly detailed. Incorporate local Mysuru culture. Give it a royal, welcoming introductory tone.`;
 
             const result = await model.generateContent(prompt);
             const responseText = result.response.text();
@@ -3292,7 +3365,7 @@ Please provide a highly structured, day-by-day (or logical if dates are flexible
     );
 
     return (
-        <div className="flex flex-col h-screen max-h-screen bg-[#F8F9FA] dark:bg-[#090909] transition-colors overflow-hidden font-sans">
+        <div className="flex flex-col h-screen max-h-screen mysore-main-bg transition-colors overflow-hidden font-sans">
             {/* Immersive Cinematic Header */}
             <div className="bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 relative overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20">
                 {/* Dynamic Background Noise/Glows */}
@@ -3428,7 +3501,7 @@ export const PartnerDashboard = ({ onLogout, partnerData }) => {
     };
 
     return (
-        <div className="min-h-screen bg-mysore-light dark:bg-mysore-dark font-sans flex transition-colors duration-200">
+        <div className="min-h-screen mysore-main-bg font-sans flex transition-colors duration-200">
             {/* Sidebar */}
             <aside className="w-64 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-r border-gray-100 dark:border-gray-800 hidden md:flex flex-col fixed h-full z-30">
                 <div className="p-8 border-b border-gray-100 dark:border-gray-800">
@@ -4578,7 +4651,7 @@ export const ProfilePage = ({ onBack, isDarkMode, onToggleDarkMode, onLogout, us
     };
 
     return (
-        <div className="bg-transparent min-h-full pb-20 transition-colors duration-200">
+        <div className="mysore-main-bg min-h-full pb-20 transition-colors duration-200">
             {renderView()}
         </div>
     );
@@ -5133,7 +5206,8 @@ export const popularPlaces = [
         location: "Mandi Mohalla",
         rating: 4.8,
         coords: [12.3214, 76.6521],
-        image: "/sandalwood.png"
+        image: "/sandalwood.png",
+        story: "In the heart of Mandi Mohalla, the air is thick with the divine scent of sandalwood. Here, master artisans transform solid blocks of 'Liquid Gold' into intricate deities and fragrant treasures. This craft, once patronized by the Mysore Maharajas, remains a testament to the city's patient soul, where a single Gandaberunda carving can take months of meditative precision."
     },
     {
         id: 'silk-weaving',
@@ -5144,7 +5218,8 @@ export const popularPlaces = [
         location: "KSIC Factory",
         rating: 4.7,
         coords: [12.2905, 76.6452],
-        image: "/silk.png"
+        image: "/silk.png",
+        story: "The clatter of looms at the KSIC factory tells a tale that began in 1912. Introduced by Tipu Sultan and later perfected by the Wodeyars, Mysore Silk is defined by its 100% pure silk and genuine 24-carat gold zari. Every saree woven here is a piece of living history, carrying a unique code that traces its lineage back to the very weaver who breathed life into its shimmering folds."
     },
     {
         id: 'mylari-dosa',
@@ -5223,17 +5298,7 @@ export const popularPlaces = [
         coords: [12.4812, 76.6715],
         image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1000"
     },
-    {
-        id: 'srirangapatna-coracle',
-        title: "Srirangapatna Coracle Ride",
-        category: "Adventure",
-        categoryColor: "bg-orange-600",
-        description: "Experience a traditional coracle ride through the Cauvery at the Sangama holy site.",
-        location: "Srirangapatna (18km)",
-        rating: 4.4,
-        coords: [12.4258, 76.6575],
-        image: "https://images.unsplash.com/photo-1504198453319-5ce911baf2ea?auto=format&fit=crop&q=80&w=1000"
-    },
+
     {
         id: 'lalitha-mahal-stay',
         title: "Lalitha Mahal Palace",
@@ -5714,6 +5779,8 @@ function App() {
                             setMapDestination(place);
                             setActiveTab('MapComponent');
                         }}
+                        allPlaces={spots}
+                        onPlaceClick={handlePlaceClick}
                     />
                 );
             case 'planner':
@@ -5772,9 +5839,9 @@ function App() {
         }
     };
     return (
-        <div className="min-h-screen w-full bg-mysore-light dark:bg-mysore-dark transition-colors duration-200 selection:bg-[#D4AF37]/30 flex flex-col relative pb-24 md:pb-0">
+        <div className="min-h-screen w-full transition-colors duration-200 selection:bg-[#D4AF37]/30 flex flex-col relative">
             {activeTab !== 'profile' && activeTab !== 'details' && (
-                <div className="sticky top-0 z-40 bg-mysore-light/80 dark:bg-mysore-dark/80 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 pt-[env(safe-area-inset-top)] pb-2 shadow-sm">
+                <div className="sticky top-0 z-40 bg-[#f3e3ad]/60 dark:bg-black/60 backdrop-blur-xl border-b border-[#D4AF37]/20 pt-[env(safe-area-inset-top)] pb-2 shadow-sm">
                     <div className="max-w-7xl mx-auto w-full">
                         <Navbar
                             onProfileClick={() => setActiveTab('profile')}
@@ -5793,12 +5860,6 @@ function App() {
                     {renderContent()}
                 </div>
             </div>
-
-            {activeTab !== 'profile' && activeTab !== 'details' && (
-                <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)] bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
-                    <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
-                </div>
-            )}
 
             {/* Premium Heritage Guide ChatBot */}
             {isAuthenticated && userRole === 'user' && activeTab !== 'profile' && activeTab !== 'details' && activeTab !== 'planner' && (
