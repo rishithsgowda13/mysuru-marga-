@@ -2952,15 +2952,23 @@ export const TravaAI = ({ onBack }) => {
     useEffect(() => {
         const container = contentRef.current;
         if (!container) return;
+        let ticking = false;
 
         const handleScroll = () => {
-            const currentY = container.scrollTop;
-            if (currentY > lastScrollY.current && currentY > 80) {
-                setHeaderHidden(true);
-            } else {
-                setHeaderHidden(false);
-            }
-            lastScrollY.current = currentY;
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const currentY = container.scrollTop;
+                const delta = currentY - lastScrollY.current;
+                // Only toggle if scrolled more than 10px to avoid jitter
+                if (delta > 10 && currentY > 60) {
+                    setHeaderHidden(true);
+                } else if (delta < -10) {
+                    setHeaderHidden(false);
+                }
+                lastScrollY.current = currentY;
+                ticking = false;
+            });
         };
 
         container.addEventListener('scroll', handleScroll, { passive: true });
@@ -3651,7 +3659,7 @@ Please provide a highly structured, day-by-day (or logical if dates are flexible
     return (
         <div className="fixed inset-0 z-[100] flex flex-col h-screen max-h-screen bg-transparent transition-colors overflow-hidden font-sans">
             {/* Immersive Cinematic Header */}
-            <div className={`bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 relative overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20 transition-all duration-500 ease-in-out ${headerHidden ? '-translate-y-full max-h-0 p-0 opacity-0 border-0' : 'translate-y-0 max-h-[500px] opacity-100'}`}>
+            <div style={{ transform: headerHidden ? 'translateY(-100%)' : 'translateY(0)', opacity: headerHidden ? 0 : 1, transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease', willChange: 'transform, opacity', position: 'relative', zIndex: 10 }} className="bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20">
                 {/* Dynamic Background Noise/Glows */}
                 <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]"></div>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[120px] -mr-48 -mt-48 transition-all duration-1000"></div>
