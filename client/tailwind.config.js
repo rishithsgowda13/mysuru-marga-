@@ -24,8 +24,8 @@ export default {
         },
       },
       backgroundImage: {
-        'mysore-light': 'linear-gradient(to right bottom, #FDFAF2, #FAF2D9, #F3E1AC)',
-        'mysore-dark': 'linear-gradient(to right bottom, #1a1a1a, #2d1b0e)',
+        'mysore-light': 'linear-gradient(to right bottom, #D8B26F, #BF914A, #9E6924, #75410A)',
+        'mysore-dark': 'linear-gradient(to right bottom, #D8B26F, #BF914A, #9E6924, #75410A)',
         'card-gradient': 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
       }
     },

@@ -88,7 +88,7 @@ export const ChatBot = () => {
         setIsLoading(true);
 
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             const prompt = `You are a Heritage Guide to the City of Palaces, Mysuru (Mysore). Answer in a royal, polite, and helpful tone. Keep responses somewhat brief. User query: ${userMessage}`;
             const result = await model.generateContent(prompt);
             const responseText = result.response.text();
@@ -411,21 +411,17 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
     });
 
     return (
-        <div className="min-h-screen bg-transparent flex flex-col">
-            {/* Search & Filter Header */}
-            <div className="z-30 transition-all duration-300">
-                {/* Search Bar Container */}
-                <div className="bg-[#f3e3ad]/60 dark:bg-black/60 backdrop-blur-2xl border-b border-[#D4AF37]/10 px-6 md:px-12 py-5 md:py-6 shadow-sm">
-                    <div className="max-w-7xl mx-auto w-full relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#D4AF37] transition-colors w-5 h-5 pointer-events-none" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search heritage, nature, food..."
-                            className="w-full bg-white dark:bg-gray-900 rounded-[2rem] py-4 md:py-5 pl-16 pr-8 text-sm md:text-base font-medium dark:text-gray-100 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/10 transition-all placeholder-gray-400 shadow-inner"
-                        />
-                    </div>
+        <div className="pb-32 bg-transparent min-h-screen">
+            <div className="sticky top-[80px] md:top-[88px] bg-transparent z-30 px-6 md:px-12 py-4 md:py-6 transition-all">
+                <div className="relative w-full">
+                    <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search heritage, nature, food..."
+                        className="w-full bg-gray-50 dark:bg-gray-900 rounded-[1.5rem] py-3.5 md:py-4 pl-14 pr-6 text-sm font-medium dark:text-gray-200 focus:outline-none focus:ring-4 focus:ring-[#D4AF37]/10 transition-all placeholder-gray-400"
+                    />
                 </div>
 
                 {/* Categories Bar Container - Sticks below search */}
@@ -480,7 +476,7 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
 export const FeaturedCard = ({ place, onClick, isSaved, onToggleSave }) => (
     <div
         onClick={() => onClick(place)}
-        className="flex-shrink-0 w-64 md:w-full bg-white dark:bg-gray-800 rounded-[2rem] overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] scale-100 hover:scale-[1.02] transition-all duration-500 ease-out group cursor-pointer relative"
+        className="flex-shrink-0 w-64 md:w-full bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-[2rem] overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_40px_-10px_rgba(212,175,55,0.2)] scale-100 hover:scale-[1.02] transition-all duration-500 ease-out group cursor-pointer relative"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -1240,7 +1236,7 @@ export const PlaceCard = ({ image, category, title, description, location, ratin
     return (
         <div
             onClick={onClick}
-            className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 cursor-pointer relative"
+            className="group bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(212,175,55,0.15)] transition-all duration-300 cursor-pointer relative"
         >
             {/* Image Container */}
             <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -1486,26 +1482,57 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
                         )}
                     </div>
 
-                    {/* Nearby Attractions */}
-                    {nearbyPlaces.length > 0 && (
-                        <div>
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-3xl font-serif text-gray-900 dark:text-white tracking-tight">Nearby Attractions</h2>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Within 2-5 KM</span>
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-2">
+                            {['#heritage', '#culture', '#mysore'].map(tag => (
+                                <span key={tag} className="text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* Products / Offerings */}
+                        {place.products && place.products.length > 0 && (
+                            <div className="mt-4">
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Treasures & Offerings</h2>
+                                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+                                    {place.products.map(prod => (
+                                        <div key={prod.id} className="min-w-[200px] sm:min-w-[240px] bg-white/10 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-white/20 dark:border-gray-700/50 p-4 shadow-sm snap-start">
+                                            {prod.image && (
+                                                <div className="w-full h-32 rounded-2xl overflow-hidden mb-3">
+                                                    <img src={prod.image} alt={prod.description} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                                </div>
+                                            )}
+                                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">{prod.description}</h3>
+                                            <p className="text-[10px] font-black tracking-widest uppercase text-[#D4AF37]">{prod.priceRange}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                {nearbyPlaces.map(nearby => (
-                                    <div
-                                        key={nearby.id}
-                                        onClick={() => onPlaceClick(nearby)}
-                                        className="group cursor-pointer space-y-3"
-                                    >
-                                        <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-lg transform group-hover:-translate-y-2 transition-transform duration-500">
-                                            <img src={nearby.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={nearby.title} />
-                                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                                                <div className="flex items-center gap-1">
-                                                    <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
-                                                    <span className="text-[10px] font-bold text-white">{nearby.rating}</span>
+                        )}
+
+                        {/* History & Heritage */}
+                        <div className="space-y-6 mt-6">
+                            {(place.history || place.heritage) ? (
+                                <>
+                                    {place.history && (
+                                        <div className="p-6 bg-slate-50 dark:bg-gray-800/30 rounded-[2rem] border-l-4 border-slate-400">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="p-2 bg-slate-200 dark:bg-slate-800 rounded-xl">
+                                                    <History className="w-5 h-5 text-slate-700" />
+                                                </div>
+                                                <h3 className="text-xl font-serif text-slate-900 dark:text-slate-100">Historical Significance</h3>
+                                            </div>
+                                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed whitespace-pre-line">
+                                                {place.history}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {place.heritage && (
+                                        <div className="p-6 bg-amber-50/50 dark:bg-amber-900/10 rounded-[2rem] border-l-4 border-amber-400">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="p-2 bg-amber-200 dark:bg-amber-800 rounded-xl">
+                                                    <Landmark className="w-5 h-5 text-amber-700" />
                                                 </div>
                                             </div>
                                         </div>
@@ -2948,7 +2975,77 @@ export const AuthPage = ({ onLogin, onSignUp }) => {
 
 
 export const TravaAI = ({ onBack }) => {
-    const [mode, setMode] = useState('chat'); // 'chat' or 'planner'
+    const [mode, setMode] = useState('chat'); // 'chat', 'planner', or 'budget'
+    const [headerHidden, setHeaderHidden] = useState(false);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [inviteName, setInviteName] = useState('');
+    const [inviteCopied, setInviteCopied] = useState(false);
+    const lastScrollY = useRef(0);
+    const contentRef = useRef(null);
+
+    // Budget Splitter State
+    const [friends, setFriends] = useState(() => {
+        const saved = localStorage.getItem('trip_friends');
+        return saved ? JSON.parse(saved) : ['You'];
+    });
+    const [expenses, setExpenses] = useState(() => {
+        const saved = localStorage.getItem('trip_expenses');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [newFriend, setNewFriend] = useState('');
+    const [newExpense, setNewExpense] = useState({ description: '', amount: '', paidBy: 'You', splitAmong: [] });
+    const [showAddExpense, setShowAddExpense] = useState(false);
+
+    // Persist budget data
+    useEffect(() => {
+        localStorage.setItem('trip_friends', JSON.stringify(friends));
+    }, [friends]);
+    useEffect(() => {
+        localStorage.setItem('trip_expenses', JSON.stringify(expenses));
+    }, [expenses]);
+
+    const handleInvite = () => {
+        const inviteLink = `${window.location.origin}?invite=trip&from=${encodeURIComponent(inviteName || 'A Friend')}`;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Join my Mysuru Trip!',
+                text: `${inviteName || 'Hey'}, you\'re invited to plan a trip to Mysuru together on Trava AI!`,
+                url: inviteLink
+            }).catch(() => { });
+        } else {
+            navigator.clipboard.writeText(inviteLink);
+            setInviteCopied(true);
+            setTimeout(() => setInviteCopied(false), 2500);
+        }
+    };
+
+    // Scroll-aware header: hide on scroll down, show on scroll up
+    useEffect(() => {
+        const container = contentRef.current;
+        if (!container) return;
+        let ticking = false;
+
+        const handleScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const currentY = container.scrollTop;
+                const delta = currentY - lastScrollY.current;
+                // Only toggle if scrolled more than 10px to avoid jitter
+                if (delta > 10 && currentY > 60) {
+                    setHeaderHidden(true);
+                } else if (delta < -10) {
+                    setHeaderHidden(false);
+                }
+                lastScrollY.current = currentY;
+                ticking = false;
+            });
+        };
+
+        container.addEventListener('scroll', handleScroll, { passive: true });
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [mode]);
+
     const [formData, setFormData] = useState({
         tripName: '',
         startingFrom: '',
@@ -2996,7 +3093,7 @@ export const TravaAI = ({ onBack }) => {
         setIsTravaLoading(true);
 
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             const prompt = `You are Trava AI, an intelligent personal travel companion for Mysuru (Mysore). Be very helpful, knowledgeable, and suggest highly practical travel tips, itineraries, and facts based on the city's rich heritage. Format your output clearly. User query: ${userMessage}`;
             const result = await model.generateContent(prompt);
             const responseText = result.response.text();
@@ -3012,7 +3109,7 @@ export const TravaAI = ({ onBack }) => {
     const generatePlanner = async () => {
         setIsTravaLoading(true);
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
             const prompt = `Generate a detailed Mysuru travel itinerary based on these user preferences:
             Theme/Identity: ${formData.tripName || 'My Mysuru Trip'}
             Starting City: ${formData.startingFrom || 'Anywhere'}
@@ -3094,8 +3191,274 @@ export const TravaAI = ({ onBack }) => {
         </div>
     );
 
+    const addFriend = () => {
+        if (newFriend.trim() && !friends.includes(newFriend.trim())) {
+            setFriends(prev => [...prev, newFriend.trim()]);
+            setNewFriend('');
+        }
+    };
+
+    const addExpense = () => {
+        if (!newExpense.description.trim() || !newExpense.amount || Number(newExpense.amount) <= 0) return;
+        const splitList = newExpense.splitAmong.length > 0 ? newExpense.splitAmong : friends;
+        setExpenses(prev => [...prev, {
+            id: Date.now(),
+            description: newExpense.description,
+            amount: Number(newExpense.amount),
+            paidBy: newExpense.paidBy,
+            splitAmong: splitList,
+            date: new Date().toLocaleDateString()
+        }]);
+        setNewExpense({ description: '', amount: '', paidBy: 'You', splitAmong: [] });
+        setShowAddExpense(false);
+    };
+
+    const deleteExpense = (id) => {
+        setExpenses(prev => prev.filter(e => e.id !== id));
+    };
+
+    const getSettlements = () => {
+        const balances = {};
+        friends.forEach(f => balances[f] = 0);
+
+        expenses.forEach(exp => {
+            const perPerson = exp.amount / exp.splitAmong.length;
+            balances[exp.paidBy] = (balances[exp.paidBy] || 0) + exp.amount;
+            exp.splitAmong.forEach(person => {
+                balances[person] = (balances[person] || 0) - perPerson;
+            });
+        });
+
+        const debtors = [];
+        const creditors = [];
+        Object.entries(balances).forEach(([person, balance]) => {
+            if (balance < -0.01) debtors.push({ person, amount: -balance });
+            else if (balance > 0.01) creditors.push({ person, amount: balance });
+        });
+
+        debtors.sort((a, b) => b.amount - a.amount);
+        creditors.sort((a, b) => b.amount - a.amount);
+
+        const settlements = [];
+        let i = 0, j = 0;
+        while (i < debtors.length && j < creditors.length) {
+            const amount = Math.min(debtors[i].amount, creditors[j].amount);
+            if (amount > 0.01) {
+                settlements.push({ from: debtors[i].person, to: creditors[j].person, amount: amount.toFixed(0) });
+            }
+            debtors[i].amount -= amount;
+            creditors[j].amount -= amount;
+            if (debtors[i].amount < 0.01) i++;
+            if (creditors[j].amount < 0.01) j++;
+        }
+        return settlements;
+    };
+
+    const totalExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+
+    const renderBudgetSplitter = () => (
+        <div className="px-6 md:px-12 pt-8 pb-40 space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+            {/* Summary Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="p-5 bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl rounded-[2rem] border border-white dark:border-gray-800 shadow-lg">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Total Spent</p>
+                    <p className="text-3xl font-serif text-gray-900 dark:text-white">₹{totalExpenses.toLocaleString()}</p>
+                </div>
+                <div className="p-5 bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl rounded-[2rem] border border-white dark:border-gray-800 shadow-lg">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Per Person</p>
+                    <p className="text-3xl font-serif text-gray-900 dark:text-white">₹{friends.length > 0 ? (totalExpenses / friends.length).toFixed(0) : 0}</p>
+                </div>
+                <div className="p-5 bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl rounded-[2rem] border border-white dark:border-gray-800 shadow-lg col-span-2 md:col-span-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Trip Members</p>
+                    <p className="text-3xl font-serif text-gray-900 dark:text-white">{friends.length}</p>
+                </div>
+            </div>
+
+            {/* Friends Section */}
+            <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-6 md:p-8 rounded-[2.5rem] border border-white dark:border-gray-800 shadow-xl">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-[#D4AF37]/10 rounded-2xl">
+                            <Users className="w-5 h-5 text-[#D4AF37]" />
+                        </div>
+                        <h3 className="text-xl font-serif text-gray-900 dark:text-white">Trip Members</h3>
+                    </div>
+                </div>
+                <div className="flex flex-wrap gap-3 mb-4">
+                    {friends.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8962F] flex items-center justify-center text-[10px] font-black text-black">
+                                {f.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{f}</span>
+                            {f !== 'You' && (
+                                <button onClick={() => setFriends(prev => prev.filter(p => p !== f))} className="ml-1 text-gray-300 hover:text-red-500 transition-colors">
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                <div className="flex gap-3">
+                    <input
+                        value={newFriend}
+                        onChange={(e) => setNewFriend(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addFriend()}
+                        placeholder="Add friend's name..."
+                        className="flex-1 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl py-3.5 px-5 text-sm font-medium focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all"
+                    />
+                    <button onClick={addFriend} className="px-6 py-3.5 bg-black dark:bg-[#D4AF37] text-white dark:text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                        <Plus size={16} /> Add
+                    </button>
+                </div>
+            </div>
+
+            {/* Add Expense */}
+            <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-6 md:p-8 rounded-[2.5rem] border border-white dark:border-gray-800 shadow-xl">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/20 rounded-2xl">
+                            <IndianRupee className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <h3 className="text-xl font-serif text-gray-900 dark:text-white">Expenses</h3>
+                    </div>
+                    <button onClick={() => setShowAddExpense(!showAddExpense)} className="px-5 py-2.5 bg-[#D4AF37]/10 text-[#D4AF37] rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#D4AF37]/20 transition-all flex items-center gap-2">
+                        <Plus size={14} /> {showAddExpense ? 'Cancel' : 'New Expense'}
+                    </button>
+                </div>
+
+                {showAddExpense && (
+                    <div className="mb-6 p-5 bg-gray-50 dark:bg-gray-800/50 rounded-[2rem] border border-gray-100 dark:border-gray-700 space-y-4 animate-in slide-in-from-top-2 duration-300">
+                        <input
+                            value={newExpense.description}
+                            onChange={(e) => setNewExpense(p => ({ ...p, description: e.target.value }))}
+                            placeholder="What was it for? e.g., Palace tickets, lunch..."
+                            className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 px-5 text-sm font-medium focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all"
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-2 mb-1.5 block">Amount (₹)</label>
+                                <input
+                                    type="number"
+                                    value={newExpense.amount}
+                                    onChange={(e) => setNewExpense(p => ({ ...p, amount: e.target.value }))}
+                                    placeholder="0"
+                                    className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 px-5 text-sm font-bold focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-2 mb-1.5 block">Paid By</label>
+                                <select
+                                    value={newExpense.paidBy}
+                                    onChange={(e) => setNewExpense(p => ({ ...p, paidBy: e.target.value }))}
+                                    className="w-full bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 px-5 text-sm font-bold appearance-none focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all cursor-pointer"
+                                >
+                                    {friends.map(f => <option key={f} value={f}>{f}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 ml-2 mb-2 block">Split Among (leave empty for everyone)</label>
+                            <div className="flex flex-wrap gap-2">
+                                {friends.map(f => (
+                                    <button
+                                        key={f}
+                                        onClick={() => {
+                                            setNewExpense(p => ({
+                                                ...p,
+                                                splitAmong: p.splitAmong.includes(f)
+                                                    ? p.splitAmong.filter(x => x !== f)
+                                                    : [...p.splitAmong, f]
+                                            }));
+                                        }}
+                                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border active:scale-95 ${newExpense.splitAmong.includes(f)
+                                            ? 'bg-[#D4AF37] text-black border-[#D4AF37]'
+                                            : 'bg-white dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700 hover:border-[#D4AF37]'
+                                            }`}
+                                    >
+                                        {f}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <button onClick={addExpense} className="w-full py-4 bg-black dark:bg-[#D4AF37] text-white dark:text-black rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all">
+                            Add Expense
+                        </button>
+                    </div>
+                )}
+
+                {/* Expense List */}
+                <div className="space-y-3">
+                    {expenses.length === 0 ? (
+                        <div className="py-12 text-center">
+                            <IndianRupee className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                            <p className="text-sm text-gray-400 font-medium">No expenses yet. Add your first one!</p>
+                        </div>
+                    ) : (
+                        expenses.map(exp => (
+                            <div key={exp.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-700 group">
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0">
+                                        <IndianRupee className="w-4 h-4 text-emerald-600" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{exp.description}</p>
+                                        <p className="text-[10px] text-gray-400 font-medium">{exp.paidBy} paid · {exp.date} · Split with {exp.splitAmong.length}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <span className="text-lg font-black text-gray-900 dark:text-white">₹{exp.amount.toLocaleString()}</span>
+                                    <button onClick={() => deleteExpense(exp.id)} className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-300 hover:text-red-500 rounded-lg transition-all">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* Settlements */}
+            {expenses.length > 0 && (
+                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-6 md:p-8 rounded-[2.5rem] border border-white dark:border-gray-800 shadow-xl">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2.5 bg-amber-100 dark:bg-amber-900/20 rounded-2xl">
+                            <TrendingUp className="w-5 h-5 text-amber-600" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-serif text-gray-900 dark:text-white">Settlements</h3>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">Who owes whom</p>
+                        </div>
+                    </div>
+                    <div className="space-y-3">
+                        {getSettlements().length === 0 ? (
+                            <div className="py-8 text-center">
+                                <Check className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+                                <p className="text-sm text-gray-500 font-bold">All settled up! 🎉</p>
+                            </div>
+                        ) : (
+                            getSettlements().map((s, i) => (
+                                <div key={i} className="flex items-center gap-4 p-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-2xl border border-amber-100/50 dark:border-amber-800/30">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center text-[10px] font-black text-white">
+                                        {s.from.charAt(0)}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-bold text-gray-900 dark:text-white">
+                                            <span className="text-red-500">{s.from}</span> owes <span className="text-emerald-600">{s.to}</span>
+                                        </p>
+                                    </div>
+                                    <span className="text-lg font-black text-[#D4AF37]">₹{Number(s.amount).toLocaleString()}</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
     const renderPlanner = () => (
-        <div className="h-full overflow-y-auto px-8 md:px-12 pt-10 pb-40 space-y-12 animate-in slide-in-from-bottom-4 duration-1000 custom-scrollbar">
+        <div className="px-8 md:px-12 pt-10 pb-40 space-y-12 animate-in slide-in-from-bottom-4 duration-1000">
             {/* Trip Essentials Card */}
             <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] border border-white dark:border-gray-800 shadow-xl space-y-8">
                 <div className="flex items-center gap-4">
@@ -3365,9 +3728,9 @@ export const TravaAI = ({ onBack }) => {
     );
 
     return (
-        <div className="flex flex-col h-screen max-h-screen mysore-main-bg transition-colors overflow-hidden font-sans">
+        <div className="fixed inset-0 z-[100] flex flex-col h-screen max-h-screen bg-transparent transition-colors overflow-hidden font-sans">
             {/* Immersive Cinematic Header */}
-            <div className="bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 relative overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20">
+            <div style={{ transform: headerHidden ? 'translateY(-100%)' : 'translateY(0)', opacity: headerHidden ? 0 : 1, transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease', willChange: 'transform, opacity', position: 'relative', zIndex: 10 }} className="bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20">
                 {/* Dynamic Background Noise/Glows */}
                 <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]"></div>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[120px] -mr-48 -mt-48 transition-all duration-1000"></div>
@@ -3378,6 +3741,15 @@ export const TravaAI = ({ onBack }) => {
                     className="absolute left-6 top-8 w-12 h-12 bg-white/5 hover:bg-[#D4AF37]/10 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center text-white transition-all hover:scale-110 active:scale-90 z-30"
                 >
                     <ArrowLeft size={22} className="text-[#D4AF37]" />
+                </button>
+
+                {/* Invite Friend Button - Top Right */}
+                <button
+                    onClick={() => setShowInviteModal(true)}
+                    className="absolute right-6 top-8 flex items-center gap-2 px-5 py-3 bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 backdrop-blur-xl border border-[#D4AF37]/30 rounded-full text-[#D4AF37] transition-all hover:scale-105 active:scale-95 z-30"
+                >
+                    <Users size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Invite</span>
                 </button>
 
                 <div className="flex flex-col items-center text-center space-y-4 relative z-10">
@@ -3396,28 +3768,76 @@ export const TravaAI = ({ onBack }) => {
                     <div className="bg-black/40 backdrop-blur-3xl p-2 rounded-[2rem] flex border border-[#D4AF37]/20 shadow-3xl">
                         <button
                             onClick={() => setMode('chat')}
-                            className={`px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${mode === 'chat' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
+                            className={`px-8 md:px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-500 flex items-center gap-2 ${mode === 'chat' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
                         >
                             <MessageSquare size={14} className={mode === 'chat' ? 'text-black' : 'text-gray-600'} />
-                            Chat Interface
+                            Chat
                         </button>
                         <button
                             onClick={() => setMode('planner')}
-                            className={`px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${mode === 'planner' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
+                            className={`px-8 md:px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-500 flex items-center gap-2 ${mode === 'planner' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
                         >
                             <LayoutDashboard size={14} className={mode === 'planner' ? 'text-black' : 'text-gray-600'} />
-                            Dynamic Planner
+                            Planner
+                        </button>
+                        <button
+                            onClick={() => setMode('budget')}
+                            className={`px-8 md:px-12 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-500 flex items-center gap-2 ${mode === 'budget' ? 'bg-[#D4AF37] text-black shadow-2xl scale-100' : 'text-gray-400 hover:text-[#D4AF37] hover:bg-white/5'}`}
+                        >
+                            <IndianRupee size={14} className={mode === 'budget' ? 'text-black' : 'text-gray-600'} />
+                            Split
                         </button>
                     </div>
                 </div>
             </div>
 
             {/* Content Container */}
-            <div className="flex-1 overflow-hidden relative">
+            <div ref={contentRef} className="flex-1 overflow-y-auto overflow-x-hidden relative">
                 {/* Subtle Background pattern */}
                 <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.pattern')]"></div>
-                {mode === 'chat' ? renderChat() : renderPlanner()}
+                {mode === 'chat' ? renderChat() : mode === 'planner' ? renderPlanner() : renderBudgetSplitter()}
             </div>
+
+            {/* Invite Friend Modal */}
+            {showInviteModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowInviteModal(false)}>
+                    <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-800 animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 bg-[#D4AF37]/10 rounded-2xl flex items-center justify-center">
+                                <Users className="w-6 h-6 text-[#D4AF37]" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-serif text-gray-900 dark:text-white">Invite a Friend</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">Share this trip plan</p>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2 mb-2 block">Friend's Name</label>
+                                <input
+                                    value={inviteName}
+                                    onChange={(e) => setInviteName(e.target.value)}
+                                    placeholder="e.g., Rahul, Priya..."
+                                    className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl py-4 px-6 text-sm font-medium focus:ring-4 focus:ring-[#D4AF37]/10 outline-none transition-all"
+                                />
+                            </div>
+                            <button
+                                onClick={handleInvite}
+                                className="w-full py-5 bg-black dark:bg-[#D4AF37] text-white dark:text-black rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                            >
+                                <Share2 size={16} />
+                                {inviteCopied ? 'Link Copied!' : 'Share Invite Link'}
+                            </button>
+                            <button
+                                onClick={() => setShowInviteModal(false)}
+                                className="w-full py-3 text-gray-400 text-xs font-bold uppercase tracking-widest hover:text-gray-600 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -3690,34 +4110,6 @@ export const PartnerOverviewTab = ({ spot, setActiveTab, feedbacks }) => {
                 </div>
             </div>
 
-            {/* Spot Preview */}
-            <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl rounded-[2.5rem] p-10 shadow-xl border border-gray-100 dark:border-gray-800 transition-all hover:scale-[1.01]">
-                <div className="flex flex-col lg:flex-row gap-10">
-                    <div className="w-full lg:w-1/3 h-64 rounded-3xl overflow-hidden shadow-2xl relative">
-                        <img src="/karanji.jpg" alt="Spot Preview" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="px-4 py-1.5 bg-[#D4AF37]/10 text-[#D4AF37] rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ring-[#D4AF37]/20">{spot.category}</span>
-                        </div>
-                        <h3 className="text-3xl font-serif text-black dark:text-white mb-4">{spot.name}</h3>
-                        <p className="text-gray-500 dark:text-gray-400 line-clamp-2 md:line-clamp-none mb-8 font-medium leading-relaxed text-sm">
-                            {spot.description}
-                        </p>
-                        <div className="flex flex-wrap gap-8 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                            <div className="flex items-center gap-3">
-                                <MapPin size={16} className="text-[#D4AF37]" />
-                                <span>{spot.location}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <Clock size={16} className="text-[#D4AF37]" />
-                                <span>{spot.openingHours}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -3751,7 +4143,7 @@ export const PartnerOverviewTab = ({ spot, setActiveTab, feedbacks }) => {
 };
 
 
-export const ManageSpotTab = ({ spot }) => {
+export const ManageSpotTab = ({ spot, showNotification }) => {
     const { t } = useTranslation();
     const [products, setProducts] = useState(spot.products || []);
     const [showProductModal, setShowProductModal] = useState(false);
@@ -5839,7 +6231,7 @@ function App() {
         }
     };
     return (
-        <div className="min-h-screen w-full transition-colors duration-200 selection:bg-[#D4AF37]/30 flex flex-col relative">
+        <div className="min-h-screen w-full bg-mysore-light dark:bg-mysore-dark bg-fixed transition-colors duration-200 selection:bg-[#D4AF37]/30 flex flex-col relative pb-24 md:pb-0">
             {activeTab !== 'profile' && activeTab !== 'details' && (
                 <div className="sticky top-0 z-40 bg-[#f3e3ad]/60 dark:bg-black/60 backdrop-blur-xl border-b border-[#D4AF37]/20 pt-[env(safe-area-inset-top)] pb-2 shadow-sm">
                     <div className="max-w-7xl mx-auto w-full">
