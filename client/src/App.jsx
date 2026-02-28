@@ -467,7 +467,7 @@ export const Explore = ({ places, onCardClick, savedPlaceIds = [], onToggleSave,
 export const FeaturedCard = ({ place, onClick, isSaved, onToggleSave }) => (
     <div
         onClick={() => onClick(place)}
-        className="flex-shrink-0 w-64 md:w-full bg-white dark:bg-gray-800 rounded-[2rem] overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] scale-100 hover:scale-[1.02] transition-all duration-500 ease-out group cursor-pointer relative"
+        className="flex-shrink-0 w-64 md:w-full bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-[2rem] overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_40px_-10px_rgba(212,175,55,0.2)] scale-100 hover:scale-[1.02] transition-all duration-500 ease-out group cursor-pointer relative"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -1227,7 +1227,7 @@ export const PlaceCard = ({ image, category, title, description, location, ratin
     return (
         <div
             onClick={onClick}
-            className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none dark:border dark:border-gray-800 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 cursor-pointer relative"
+            className="group bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(212,175,55,0.15)] transition-all duration-300 cursor-pointer relative"
         >
             {/* Image Container */}
             <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -1405,6 +1405,26 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
                                 </span>
                             ))}
                         </div>
+
+                        {/* Products / Offerings */}
+                        {place.products && place.products.length > 0 && (
+                            <div className="mt-4">
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Treasures & Offerings</h2>
+                                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+                                    {place.products.map(prod => (
+                                        <div key={prod.id} className="min-w-[200px] sm:min-w-[240px] bg-white/10 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-white/20 dark:border-gray-700/50 p-4 shadow-sm snap-start">
+                                            {prod.image && (
+                                                <div className="w-full h-32 rounded-2xl overflow-hidden mb-3">
+                                                    <img src={prod.image} alt={prod.description} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                                </div>
+                                            )}
+                                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">{prod.description}</h3>
+                                            <p className="text-[10px] font-black tracking-widest uppercase text-[#D4AF37]">{prod.priceRange}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* About Section */}
                         <div className="mt-4">
@@ -3269,7 +3289,7 @@ Please provide a highly structured, day-by-day (or logical if dates are flexible
     );
 
     return (
-        <div className="flex flex-col h-screen max-h-screen bg-[#F8F9FA] dark:bg-[#090909] transition-colors overflow-hidden font-sans">
+        <div className="fixed inset-0 z-[100] flex flex-col h-screen max-h-screen bg-transparent transition-colors overflow-hidden font-sans">
             {/* Immersive Cinematic Header */}
             <div className="bg-gradient-to-br from-[#111111] via-[#1a1a1a] to-[#000000] p-10 pt-16 relative overflow-hidden shrink-0 shadow-2xl border-b border-[#D4AF37]/20">
                 {/* Dynamic Background Noise/Glows */}
@@ -3655,7 +3675,7 @@ export const PartnerOverviewTab = ({ spot, setActiveTab, feedbacks }) => {
 };
 
 
-export const ManageSpotTab = ({ spot }) => {
+export const ManageSpotTab = ({ spot, showNotification }) => {
     const { t } = useTranslation();
     const [products, setProducts] = useState(spot.products || []);
     const [showProductModal, setShowProductModal] = useState(false);
