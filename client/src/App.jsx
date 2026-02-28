@@ -1482,66 +1482,36 @@ export const PlaceDetails = ({ place, onBack, isSaved, onToggleSave, userEmail, 
                         )}
                     </div>
 
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-2">
-                            {['#heritage', '#culture', '#mysore'].map(tag => (
-                                <span key={tag} className="text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded">
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2">
+                        {['#heritage', '#culture', '#mysore'].map(tag => (
+                            <span key={tag} className="text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
 
-                        {/* Products / Offerings */}
-                        {place.products && place.products.length > 0 && (
-                            <div className="mt-4">
-                                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Treasures & Offerings</h2>
-                                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
-                                    {place.products.map(prod => (
-                                        <div key={prod.id} className="min-w-[200px] sm:min-w-[240px] bg-white/10 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-white/20 dark:border-gray-700/50 p-4 shadow-sm snap-start">
-                                            {prod.image && (
-                                                <div className="w-full h-32 rounded-2xl overflow-hidden mb-3">
-                                                    <img src={prod.image} alt={prod.description} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                                </div>
-                                            )}
-                                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">{prod.description}</h3>
-                                            <p className="text-[10px] font-black tracking-widest uppercase text-[#D4AF37]">{prod.priceRange}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* History & Heritage */}
-                        <div className="space-y-6 mt-6">
-                            {(place.history || place.heritage) ? (
-                                <>
-                                    {place.history && (
-                                        <div className="p-6 bg-slate-50 dark:bg-gray-800/30 rounded-[2rem] border-l-4 border-slate-400">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-slate-200 dark:bg-slate-800 rounded-xl">
-                                                    <History className="w-5 h-5 text-slate-700" />
-                                                </div>
-                                                <h3 className="text-xl font-serif text-slate-900 dark:text-slate-100">Historical Significance</h3>
+                    {/* Products / Offerings */}
+                    {place.products && place.products.length > 0 && (
+                        <div className="mt-4">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Treasures & Offerings</h2>
+                            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+                                {place.products.map(prod => (
+                                    <div key={prod.id} className="min-w-[200px] sm:min-w-[240px] bg-white/10 dark:bg-gray-800/30 backdrop-blur-md rounded-3xl border border-white/20 dark:border-gray-700/50 p-4 shadow-sm snap-start">
+                                        {prod.image && (
+                                            <div className="w-full h-32 rounded-2xl overflow-hidden mb-3">
+                                                <img src={prod.image} alt={prod.description} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                                             </div>
-                                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed whitespace-pre-line">
-                                                {place.history}
-                                            </p>
-                                        </div>
-                                    )}
-                                    {place.heritage && (
-                                        <div className="p-6 bg-amber-50/50 dark:bg-amber-900/10 rounded-[2rem] border-l-4 border-amber-400">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="p-2 bg-amber-200 dark:bg-amber-800 rounded-xl">
-                                                    <Landmark className="w-5 h-5 text-amber-700" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100 group-hover:text-[#D4AF37] transition-colors">{nearby.title}</h4>
+                                        )}
+                                        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 line-clamp-2">{prod.description}</h3>
+                                        <p className="text-[10px] font-black tracking-widest uppercase text-[#D4AF37]">{prod.priceRange}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     )}
+
+
 
                     {/* Review Section */}
                     <div className="mt-8 border-t border-gray-100 dark:border-gray-800 pt-12">
