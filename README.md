@@ -2,6 +2,8 @@
 
 A premium, state-of-the-art web application dedicated to exploring the rich heritage, hidden gems, and local artisans of Mysuru.
 
+
+
 ![Mysuru Marga](https://img.shields.io/badge/Status-Premium-gold?style=for-the-badge)
 
 ## Technology Stack
